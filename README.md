@@ -1,65 +1,66 @@
 # iskeru.com
 
-Bilingual static site for **iskeru** — presents the company, its products, and the
-founder's consulting/advisory. English at the root, Portuguese (pt-BR) under `/pt/`.
+Bilingual static site for **iskeru** — products + personal profile. English at the
+root, Portuguese (pt-BR) under `/pt/`.
 
-Products (grouped by area on the single products page):
+Products (grouped by area on the products page):
 
-- **Finance** — [boletim](https://boletim.iskeru.com) (financial automation),
-  [minhabufunfa](https://minhabufunfa.iskeru.com) (personal finance) and
-  lineu-ai (AI automation — coming soon at lineu-ai.iskeru.com)
-- **Events** — [cevem](https://cevem.iskeru.com) (invitations & RSVP)
-- **Buildings** — pacdoorman (package management over WhatsApp — coming soon)
+- **Finance** — [boletim](https://boletim.iskeru.com), [minhabufunfa](https://minhabufunfa.iskeru.com), lineu-ai (soon)
+- **Events** — [cevem](https://cevem.iskeru.com)
+- **Buildings** — pacdoorman (soon)
 
 ## How it works
 
-The HTML is **generated** from a single source by `build.py` (Python standard
-library only — no npm, no framework). Edit the content/data in `build.py` once and
-both languages are regenerated, so they never drift.
+The site is **generated** from a single source by `build.py` (Python standard
+library only — no npm, no framework). Output goes to `dist/`, which is **not
+committed** (built at deploy time). Edit the content/data in `build.py` once and
+both languages regenerate, so they never drift.
 
 ```bash
-python3 build.py        # regenerates all pages + sitemap.xml
+python3 build.py        # -> writes the full site into dist/
 ```
 
-### Source (edit these)
+### Source (tracked — edit these)
 
 ```
-build.py            Content data (CONTENT/PRODUCTS) + templates + the generator
+build.py            Content data (CONTENT/PRODUCTS/…) + templates + the generator
 assets/styles.css   Styles (no external dependencies)
+assets/moacyr.jpg   Profile photo
 favicon.svg         Icon
 robots.txt          Indexing + sitemap pointer
+deploy.sh           Build + ship to a remote box over SSH
 ```
 
-### Generated output (do not edit by hand — re-run build.py)
+### Generated (in `dist/`, gitignored — never edit by hand)
 
 ```
-index.html               EN  home
-products/index.html      EN  products (Finance / Events / Buildings)
-about/index.html         EN  founder + consulting
-pt/index.html            PT  home
-pt/produtos/index.html   PT  products
-pt/sobre/index.html      PT  consultoria / advisory
-sitemap.xml              both languages, with hreflang alternates
+dist/index.html              EN home
+dist/products/index.html     EN products
+dist/about/index.html        EN profile
+dist/pt/…                     PT mirror (/pt/, /pt/produtos/, /pt/sobre/)
+dist/sitemap.xml             both languages, with hreflang alternates
+dist/assets, favicon, robots  static assets copied in
 ```
 
 URLs: EN at `/`, `/products/`, `/about/`; PT at `/pt/`, `/pt/produtos/`,
-`/pt/sobre/`. Each page carries `hreflang` alternates and a header language
-switcher (EN | PT).
+`/pt/sobre/`. Each page carries `hreflang` alternates and a header EN | PT switcher.
 
 ## Run locally
 
 ```bash
 python3 build.py
-python3 -m http.server 8000
+python3 -m http.server -d dist 8000
 # open http://localhost:8000
 ```
 
 ## Deploy
 
-Any static host (nginx, Cloudflare Pages, S3, etc.). Run `python3 build.py`, then
-serve the repository root. Make sure `robots.txt` and `sitemap.xml` are reachable at
-`https://iskeru.com/robots.txt` and `https://iskeru.com/sitemap.xml`.
+`deploy.sh` builds and ships `dist/` to a remote folder over SSH (rsync with
+`--delete`, scp fallback). Target is parametrized by environment variables:
 
-> **Sitemap note:** it lists only `iskeru.com` pages. The `cevem`, `boletim` and
-> `minhabufunfa` subdomains are their own hosts and should ship their own
-> `sitemap.xml` / `robots.txt`.
+```bash
+ISKERU_SSH=ubuntu@<host> ISKERU_PATH=/var/www/iskeru ./deploy.sh
+```
+
+`ISKERU_SSH` must be the box's real address or an `~/.ssh/config` host alias — not
+the Cloudflare-proxied public domain.

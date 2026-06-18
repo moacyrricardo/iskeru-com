@@ -19,6 +19,9 @@ GITHUB = "https://github.com/moacyrricardo"
 NBHY = "&#8209;"  # non-breaking hyphen, for "lineu-ai"
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+DIST = os.path.join(ROOT, "dist")
+# Static source assets copied verbatim into dist/ (web root) alongside generated HTML.
+STATIC = ["assets", "favicon.svg", "robots.txt"]
 
 LANGS = ["en", "pt"]
 HTML_LANG = {"en": "en", "pt": "pt-BR"}
@@ -822,9 +825,9 @@ RENDERERS = {"home": render_home, "products": render_products, "about": render_a
 
 
 def out_path(route):
-    """'/' -> index.html ; '/pt/produtos/' -> pt/produtos/index.html"""
+    """'/' -> dist/index.html ; '/pt/produtos/' -> dist/pt/produtos/index.html"""
     rel = route.strip("/")
-    return os.path.join(ROOT, rel, "index.html") if rel else os.path.join(ROOT, "index.html")
+    return os.path.join(DIST, rel, "index.html") if rel else os.path.join(DIST, "index.html")
 
 
 def write(path, content):
@@ -832,6 +835,17 @@ def write(path, content):
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(content)
     print("wrote", os.path.relpath(path, ROOT))
+
+
+def copy_static():
+    for item in STATIC:
+        src = os.path.join(ROOT, item)
+        dst = os.path.join(DIST, item)
+        if os.path.isdir(src):
+            shutil.copytree(src, dst)
+        elif os.path.isfile(src):
+            shutil.copy2(src, dst)
+        print("copied", item)
 
 
 def render_sitemap():
@@ -854,19 +868,9 @@ def render_sitemap():
 
 
 def clean():
-    """Remove previously generated output so renames/removals don't leave stragglers."""
-    for route in (r[l] for r in ROUTES.values() for l in LANGS):
-        p = out_path(route)
-        if os.path.isfile(p):
-            os.remove(p)
-    # legacy files from the pre-generator structure
-    for legacy in ("sobre.html",):
-        p = os.path.join(ROOT, legacy)
-        if os.path.isfile(p):
-            os.remove(p)
-    legacy_dir = os.path.join(ROOT, "produtos")
-    if os.path.isdir(legacy_dir):
-        shutil.rmtree(legacy_dir)
+    """Wipe and recreate dist/ so every build is reproducible (no stragglers)."""
+    shutil.rmtree(DIST, ignore_errors=True)
+    os.makedirs(DIST)
 
 
 def main():
@@ -874,8 +878,9 @@ def main():
     for key, render in RENDERERS.items():
         for lang in LANGS:
             write(out_path(ROUTES[key][lang]), render(lang))
-    write(os.path.join(ROOT, "sitemap.xml"), render_sitemap())
-    print("done.")
+    write(os.path.join(DIST, "sitemap.xml"), render_sitemap())
+    copy_static()
+    print("done. output in dist/")
 
 
 if __name__ == "__main__":
