@@ -1,0 +1,11 @@
+# Claude Code local settings (contains local paths to other repos)
+.claude/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+
+# Python
+__pycache__/
+*.pyc
