@@ -13,7 +13,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-SSH_TARGET="${ISKERU_SSH:?set ISKERU_SSH=user@host (the box's real IP or an ssh-config host)}"
+SSH_TARGET="${ISKERU_SSH:?set ISKERU_SSH=user@host (the real IP of the box or an ssh-config host)}"
 DEST="${ISKERU_PATH:?set ISKERU_PATH=/var/www/iskeru (the web root folder on the box)}"
 
 # 1. Build the site fresh into dist/.
