@@ -33,6 +33,10 @@ ROUTES = {
     "home":     {"en": "/",          "pt": "/pt/"},
     "products": {"en": "/products/", "pt": "/pt/produtos/"},
     "about":    {"en": "/about/",    "pt": "/pt/sobre/"},
+    # The 404 is a single bilingual file served at the web root via nginx
+    # error_page. There is no /pt/ variant, so both languages point at the same
+    # absolute path — it is reachable at any depth, never via nav or sitemap.
+    "notfound": {"en": "/404.html",  "pt": "/404.html"},
 }
 
 NAV = {
@@ -308,6 +312,14 @@ T = {
         "oss_sub": "A few public projects — building blocks behind the products.",
         "oss_all": "See all projects on GitHub",
         "view_gh": "View on GitHub",
+        # 404
+        "nf_title": "Page not found — iskeru",
+        "nf_desc": "The page you were looking for doesn't exist. Head back to the iskeru home page or browse the products.",
+        "nf_eyebrow": "404",
+        "nf_h1": "This page doesn't exist.",
+        "nf_lede": "The address you followed may be broken or the page may have moved. Try the home page or the products below.",
+        "nf_home": "Go to home",
+        "nf_products": "See products",
     },
     "pt": {
         "footer_note": "Produtos digitais que simplificam o dia a dia.",
@@ -366,6 +378,14 @@ T = {
         "oss_sub": "Alguns projetos públicos — peças por trás dos produtos.",
         "oss_all": "Ver todos os projetos no GitHub",
         "view_gh": "Ver no GitHub",
+        # 404
+        "nf_title": "Página não encontrada — iskeru",
+        "nf_desc": "A página que você procurava não existe. Volte para a página inicial da iskeru ou conheça os produtos.",
+        "nf_eyebrow": "404",
+        "nf_h1": "Esta página não existe.",
+        "nf_lede": "O endereço que você acessou pode estar quebrado ou a página pode ter mudado de lugar. Tente a página inicial ou os produtos abaixo.",
+        "nf_home": "Ir para o início",
+        "nf_products": "Ver produtos",
     },
 }
 
@@ -817,6 +837,36 @@ def render_about(lang):
     return page(lang, "about", t["about_title"], t["about_desc"], body)
 
 
+def notfound_block(lang):
+    """One language's slice of the bilingual 404 body. All links are absolute
+    (ROUTES values are already absolute) since a 404 is served at any depth."""
+    t = T[lang]
+    return f"""    <section class="hero" lang="{HTML_LANG[lang]}">
+      <div class="container narrow">
+        <p class="eyebrow">{t['nf_eyebrow']}</p>
+        <h1>{t['nf_h1']}</h1>
+        <p class="lede">{t['nf_lede']}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="{ROUTES['home'][lang]}">{t['nf_home']}</a>
+          <a class="btn btn-ghost" href="{ROUTES['products'][lang]}">{t['nf_products']}</a>
+        </div>
+      </div>
+    </section>"""
+
+
+def render_notfound():
+    """A single bilingual 404: EN and PT sections stacked in one file, rendered
+    through the shared PAGE template (head/header switcher/footer). Served by
+    nginx error_page at the web root, never linked from nav or the sitemap."""
+    t = T["en"]
+    blocks = "\n\n".join(notfound_block(lang) for lang in LANGS)
+    body = f"""  <main id="main">
+{blocks}
+  </main>
+"""
+    return page("en", "notfound", t["nf_title"], t["nf_desc"], body)
+
+
 # ----------------------------------------------------------------------------
 # Output
 # ----------------------------------------------------------------------------
@@ -851,6 +901,8 @@ def copy_static():
 def render_sitemap():
     urls = []
     for key in ROUTES:
+        if key == "notfound":
+            continue  # the 404 is error-only — never advertised in the sitemap
         for lang in LANGS:
             loc = SITE + ROUTES[key][lang]
             prio = "1.0" if key == "home" else ("0.9" if key == "products" else "0.7")
@@ -878,6 +930,8 @@ def main():
     for key, render in RENDERERS.items():
         for lang in LANGS:
             write(out_path(ROUTES[key][lang]), render(lang))
+    # Single bilingual 404 at the web root (no lang loop, no /pt/ variant).
+    write(os.path.join(DIST, "404.html"), render_notfound())
     write(os.path.join(DIST, "sitemap.xml"), render_sitemap())
     copy_static()
     print("done. output in dist/")
