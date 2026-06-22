@@ -64,3 +64,23 @@ ISKERU_SSH=ubuntu@<host> ISKERU_PATH=/var/www/iskeru ./deploy.sh
 
 `ISKERU_SSH` must be the box's real address or an `~/.ssh/config` host alias — not
 the Cloudflare-proxied public domain.
+
+## Custom 404
+
+`build.py` generates a single bilingual `dist/404.html` (EN + PT stacked, rendered
+through the same template as every other page, so it carries the header EN | PT
+switcher, nav and styling). It is **not** in the sitemap and **not** linked from
+nav — it is reachable only through nginx's error routing. All of its asset and
+nav links are absolute, because a 404 is served at arbitrary path depths.
+
+The wiring lives on the nginx **origin box**, not in this repo (so it survives a
+server rebuild — add it back when you re-provision). In the server block:
+
+```nginx
+error_page 404 /404.html;
+location = /404.html { internal; }
+```
+
+`internal` prevents the page from being fetched directly with a `200`. After
+deploy, `curl -I https://iskeru.com/does-not-exist` should return `404` with the
+custom page body and assets loading from their absolute paths.

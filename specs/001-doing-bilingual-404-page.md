@@ -1,5 +1,8 @@
 # 001 — Custom bilingual 404 page
 
+> Status: **doing** — branch `moacyrricardo/spec-001-bilingual-404-page`.
+> No Linear ticket for this work. PR open and unmerged (stays `doing` until merge).
+
 ## Context
 
 iskeru.com is a generated static site (`build.py`, stdlib only) deployed to an
@@ -67,3 +70,46 @@ and serve it via nginx's `error_page` directive.
   is ever switched to Pages or a custom error page, this directive becomes moot —
   out of scope here.
 - No `apple-touch-icon` / `.ico` fallback work — unrelated to 404s.
+
+## Implementation Notes
+
+Implemented exactly as decided; the bilingual content is **two hero sections
+stacked** (EN then PT) inside one `<main>`, each marked with `lang="..."`.
+
+How the implementation maps to the existing `build.py` idioms:
+
+- **`ROUTES`** gained a `"notfound"` entry (`/404.html` for both `en` and `pt`).
+  This lets the page reuse the shared `head()`/`header()` template unchanged: the
+  canonical URL, the `hreflang` alternates and the EN | PT switcher all resolve
+  through `ROUTES["notfound"][lang]` like every other page. Because the 404 is a
+  single file, both languages point the switcher at the same `/404.html`.
+- **`T`** gained an `nf_*` block (title, desc, eyebrow, h1, lede, two back-link
+  labels) for both `en` and `pt`, following the existing per-page copy convention.
+- **`render_notfound()`** mirrors `render_home`/`render_products`/`render_about`
+  but takes no `lang` (it renders both): it stacks `notfound_block(lang)` for each
+  language and runs the result through `page("en", "notfound", …)`. The page chrome
+  (html lang, switcher active state, footer) is rendered in EN as the root default;
+  the body carries both languages.
+- **`main()`** writes `dist/404.html` directly (single root file, no lang loop, no
+  `/pt/` variant) — handled alongside the `sitemap.xml` write rather than through
+  the `RENDERERS`/`out_path()` per-language loop.
+- **`render_sitemap()`** explicitly `continue`s past the `notfound` key so the 404
+  never appears in `sitemap.xml`. It is also not linked from nav.
+- **All links are absolute** — confirmed by construction: `ROUTES` values, the
+  favicon (`/favicon.svg`) and stylesheet (`/assets/styles.css`) in `head()` are
+  all root-absolute, so the page is depth-independent.
+
+### Deviations / notes
+
+- **Single `render_notfound()` (no `lang` parameter).** Unlike the other
+  renderers it does not loop per language at the call site — it is the one page
+  that is intentionally bilingual-in-one-file, so the lang-loop lives *inside* it.
+- **nginx config** (`error_page 404 /404.html; location = /404.html { internal; }`)
+  documented in `README.md` under a new "Custom 404" section; it lives on the
+  origin box, not in the repo.
+- **Verification gap.** The runtime verification from the spec (`python3 build.py`,
+  serve, view the rendered page) was **not executed in the build environment**
+  because Python execution was unavailable there. The generation path is pure
+  deterministic string templating and was reviewed statically; the human should run
+  `python3 build.py` then `python3 -m http.server -d dist 8000` to confirm the
+  rendered page (this also produces the evidence gif).
