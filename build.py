@@ -9,6 +9,7 @@ both languages (English at /, Portuguese at /pt/) as plain static HTML.
 No external dependencies — standard library only.
 """
 
+import json
 import os
 import shutil
 
@@ -16,11 +17,16 @@ SITE = "https://iskeru.com"
 EMAIL = "contato@iskeru.com"
 LINKEDIN = "https://www.linkedin.com/in/moacyrricardo"
 GITHUB = "https://github.com/moacyrricardo"
+OG_IMAGE = "/assets/og-image.png"  # 1200x630 social card (asset produced separately)
 NBHY = "&#8209;"  # non-breaking hyphen, for "lineu-ai"
+PERSON_NAME = "Moacyr Ricardo"
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DIST = os.path.join(ROOT, "dist")
-# Static source assets copied verbatim into dist/ (web root) alongside generated HTML.
+# Static source assets copied verbatim into dist/ (web root) alongside generated
+# HTML. The whole assets/ directory is copied, so the 1200x630 social card at
+# assets/og-image.png (referenced by og:image / twitter:image) ships automatically
+# once the design asset is dropped in — see OG_IMAGE.
 STATIC = ["assets", "favicon.svg", "robots.txt"]
 
 LANGS = ["en", "pt"]
@@ -437,13 +443,89 @@ def icon(name, cls="icon"):
 
 
 # ----------------------------------------------------------------------------
+# Structured data (JSON-LD)
+# ----------------------------------------------------------------------------
+# Each page emits a site-wide Person plus, on the service pages, a Service node
+# (provider -> the Person) and a FAQPage. Everything is serialized with
+# json.dumps so quoting/escaping is correct by construction — never hand-built.
+
+KNOWS_ABOUT = {
+    "en": ["Software architecture", "Artificial intelligence", "LLM integrations",
+           "Engineering leadership", "Fintech", "Payment systems", "Pix"],
+    "pt": ["Arquitetura de software", "Inteligência artificial", "Integrações com LLMs",
+           "Liderança de engenharia", "Fintech", "Sistemas de pagamento", "Pix"],
+}
+
+PERSON_ID = SITE + "/about/#person"
+
+
+def person_ld(lang):
+    """The site-wide Person node. Referenced by @id from Service providers."""
+    job_title = ("Principal Engineer, Fractional CTO & Advisor" if lang == "en"
+                 else "Principal Engineer, CTO Fracional e Advisor")
+    return {
+        "@type": "Person",
+        "@id": PERSON_ID,
+        "name": PERSON_NAME,
+        "url": SITE + ROUTES["about"][lang],
+        "jobTitle": job_title,
+        "image": SITE + "/assets/moacyr.jpg",
+        "sameAs": [LINKEDIN, GITHUB],
+        "knowsAbout": KNOWS_ABOUT[lang],
+        "worksFor": {"@type": "Organization", "name": "iskeru", "url": SITE},
+    }
+
+
+def service_ld(name, service_type, desc, url):
+    """A ProfessionalService offered by the Person, for a service page."""
+    return {
+        "@type": "ProfessionalService",
+        "name": name,
+        "serviceType": service_type,
+        "description": desc,
+        "url": url,
+        "provider": {"@id": PERSON_ID},
+        "areaServed": [
+            {"@type": "Country", "name": "Brazil"},
+            {"@type": "AdministrativeArea", "name": "Remote / Worldwide"},
+        ],
+    }
+
+
+def faq_ld(faqs):
+    """A FAQPage node from a list of {q, a} dicts (eligible for FAQ rich results)."""
+    return {
+        "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": f["q"],
+             "acceptedAnswer": {"@type": "Answer", "text": f["a"]}}
+            for f in faqs
+        ],
+    }
+
+
+def ld_script(nodes):
+    """Render one ld+json <script> wrapping the given nodes in an @graph.
+
+    Drops any None entries so callers can pass optional nodes inline. Returns ""
+    when there is nothing to emit. json.dumps handles all escaping."""
+    graph = [n for n in nodes if n]
+    if not graph:
+        return ""
+    doc = {"@context": "https://schema.org", "@graph": graph}
+    payload = json.dumps(doc, ensure_ascii=False, indent=2)
+    return f'  <script type="application/ld+json">\n{payload}\n  </script>\n'
+
+
+# ----------------------------------------------------------------------------
 # Rendering helpers
 # ----------------------------------------------------------------------------
 
-def head(lang, key, title, desc):
+def head(lang, key, title, desc, ld=""):
     canonical = SITE + ROUTES[key][lang]
     en_url = SITE + ROUTES[key]["en"]
     pt_url = SITE + ROUTES[key]["pt"]
+    og_image = SITE + OG_IMAGE
     return f"""<!DOCTYPE html>
 <html lang="{HTML_LANG[lang]}">
 <head>
@@ -462,14 +544,16 @@ def head(lang, key, title, desc):
   <meta property="og:description" content="{desc}" />
   <meta property="og:url" content="{canonical}" />
   <meta property="og:locale" content="{OG_LOCALE[lang]}" />
-  <meta name="twitter:card" content="summary" />
+  <meta property="og:image" content="{og_image}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="{og_image}" />
 
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/assets/styles.css" />
-</head>
+{ld}</head>
 <body>
   <a class="skip-link" href="#main">{T[lang]['skip']}</a>
 """
@@ -539,8 +623,8 @@ def footer(lang):
 """
 
 
-def page(lang, key, title, desc, body):
-    return head(lang, key, title, desc) + header(lang, key) + body + footer(lang)
+def page(lang, key, title, desc, body, ld=""):
+    return head(lang, key, title, desc, ld) + header(lang, key) + body + footer(lang)
 
 
 def badge(status, lang):
@@ -655,7 +739,8 @@ def render_home(lang):
     </section>
   </main>
 """
-    return page(lang, "home", t["home_title"], t["home_desc"], body)
+    return page(lang, "home", t["home_title"], t["home_desc"], body,
+                ld=ld_script([person_ld(lang)]))
 
 
 def render_products(lang):
@@ -681,7 +766,8 @@ def render_products(lang):
 {chr(10).join(sections)}
   </main>
 """
-    return page(lang, "products", t["products_page_title"], t["products_page_desc"], body)
+    return page(lang, "products", t["products_page_title"], t["products_page_desc"], body,
+                ld=ld_script([person_ld(lang)]))
 
 
 def cap_card(c, lang):
@@ -834,7 +920,8 @@ def render_about(lang):
     </section>
   </main>
 """
-    return page(lang, "about", t["about_title"], t["about_desc"], body)
+    return page(lang, "about", t["about_title"], t["about_desc"], body,
+                ld=ld_script([person_ld(lang)]))
 
 
 def notfound_block(lang):
@@ -864,7 +951,8 @@ def render_notfound():
 {blocks}
   </main>
 """
-    return page("en", "notfound", t["nf_title"], t["nf_desc"], body)
+    return page("en", "notfound", t["nf_title"], t["nf_desc"], body,
+                ld=ld_script([person_ld("en")]))
 
 
 # ----------------------------------------------------------------------------
