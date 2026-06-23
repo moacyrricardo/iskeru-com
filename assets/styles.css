@@ -334,6 +334,42 @@ h1, h2, h3 { font-family: var(--font-display); }
 .links-list-icons li { display: flex; align-items: flex-start; gap: 12px; }
 .links-list-icons .feat-ic { margin-top: 4px; }
 
+/* ---------- FAQ (service pages) ---------- */
+.faq { display: flex; flex-direction: column; gap: 12px; }
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 0 20px;
+}
+.faq-item summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 18px 0;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: "+";
+  color: var(--accent);
+  font-size: 1.4rem;
+  line-height: 1;
+  flex: none;
+  transition: transform 0.18s ease;
+}
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item summary:hover { color: var(--accent); }
+.faq-item > p {
+  margin: 0;
+  padding: 0 0 20px;
+  color: var(--text-muted);
+}
+
 /* ---------- Footer ---------- */
 .site-footer {
   border-top: 1px solid var(--border-soft);
