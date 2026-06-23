@@ -9,18 +9,25 @@ both languages (English at /, Portuguese at /pt/) as plain static HTML.
 No external dependencies — standard library only.
 """
 
+import json
 import os
+import re
 import shutil
 
 SITE = "https://iskeru.com"
 EMAIL = "contato@iskeru.com"
 LINKEDIN = "https://www.linkedin.com/in/moacyrricardo"
 GITHUB = "https://github.com/moacyrricardo"
+OG_IMAGE = "/assets/og-image.png"  # 1200x630 social card (asset produced separately)
 NBHY = "&#8209;"  # non-breaking hyphen, for "lineu-ai"
+PERSON_NAME = "Moacyr Ricardo"
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DIST = os.path.join(ROOT, "dist")
-# Static source assets copied verbatim into dist/ (web root) alongside generated HTML.
+# Static source assets copied verbatim into dist/ (web root) alongside generated
+# HTML. The whole assets/ directory is copied, so the 1200x630 social card at
+# assets/og-image.png (referenced by og:image / twitter:image) ships automatically
+# once the design asset is dropped in — see OG_IMAGE.
 STATIC = ["assets", "favicon.svg", "robots.txt"]
 
 LANGS = ["en", "pt"]
@@ -33,6 +40,9 @@ ROUTES = {
     "home":     {"en": "/",          "pt": "/pt/"},
     "products": {"en": "/products/", "pt": "/pt/produtos/"},
     "about":    {"en": "/about/",    "pt": "/pt/sobre/"},
+    # Intent-matched service pages (spec 002): each ranks for one commercial query.
+    "fractional_cto": {"en": "/fractional-cto/",    "pt": "/pt/cto-fracional/"},
+    "custom_dev":     {"en": "/custom-development/", "pt": "/pt/desenvolvimento/"},
     # The 404 is a single bilingual file served at the web root via nginx
     # error_page. There is no /pt/ variant, so both languages point at the same
     # absolute path — it is reachable at any depth, never via nav or sitemap.
@@ -41,9 +51,11 @@ ROUTES = {
 
 NAV = {
     "en": {"products": "Products", "company": "Company",
-           "consulting": "Profile", "contact": "Contact"},
+           "consulting": "Profile", "contact": "Contact",
+           "fractional_cto": "Fractional CTO", "custom_dev": "Custom development"},
     "pt": {"products": "Produtos", "company": "Empresa",
-           "consulting": "Perfil", "contact": "Contato"},
+           "consulting": "Perfil", "contact": "Contato",
+           "fractional_cto": "CTO Fracional", "custom_dev": "Desenvolvimento"},
 }
 
 BADGE = {"live": {"en": "Live", "pt": "No ar"},
@@ -283,7 +295,7 @@ T = {
         "products_lede": "iskeru builds independent products — some live, some on the way. Browse them by area below.",
         # about
         "about_title": "Moacyr Ricardo — Principal Engineer, Fractional CTO & Advisor",
-        "about_desc": "Moacyr Ricardo — Principal Engineer, Fractional CTO and advisor. Founding team, Director and Principal Engineer at QuintoAndar (2013–2025). 18 years building software, with a focus on AI services.",
+        "about_desc": "Moacyr Ricardo — Principal Engineer, Fractional CTO and advisor. Founding-team, Director & Principal Engineer at QuintoAndar. 18 years building software.",
         "about_eyebrow": "Profile",
         "about_lede": "18 years building software — from one-man-team to leading 15+ teams and 200+ services. I advise companies and startups and build my own products, with a focus on AI services.",
         "bg_title": "Background",
@@ -312,6 +324,48 @@ T = {
         "oss_sub": "A few public projects — building blocks behind the products.",
         "oss_all": "See all projects on GitHub",
         "view_gh": "View on GitHub",
+        # fractional CTO service page
+        "fcto_title": "Fractional CTO for Hire — Engineering Leadership On Demand | iskeru",
+        "fcto_desc": "Fractional CTO for hire: part-time engineering leadership, hiring and technical direction from a founding-team Principal Engineer. Advisory too.",
+        "fcto_eyebrow": "Fractional CTO",
+        "fcto_h1": "Fractional CTO for hire",
+        "fcto_lede": "Part-time engineering leadership for startups and companies that need senior technical direction without a full-time hire. I set architecture, build and grow teams, and keep delivery on track.",
+        "fcto_what_title": "What a fractional CTO does for you",
+        "fcto_what_p": "As your fractional CTO I own the technical direction: architecture and roadmap decisions, hiring and team building, code and delivery quality, and the hard build-vs-buy and AI calls — engineering leadership on demand, scaled to what you actually need.",
+        "fcto_proof_title": "Leadership proof, not just a title",
+        "fcto_proof_p": "I was on the founding team at QuintoAndar, one of Latin America's largest proptechs, as Director and Principal Engineer — helping scale engineering to 15+ teams and 200+ services, and hiring and growing the people who run them.",
+        "fcto_cta": "Talk about a fractional CTO engagement",
+        "fcto_faq": [
+            {"q": "How much does a fractional CTO cost?",
+             "a": "A fractional CTO is paid for part-time involvement — typically a monthly retainer scoped to a set number of days per month — so you get senior engineering leadership at a fraction of a full-time CTO salary. Scope and rate are agreed up front based on the days you need; email contato@iskeru.com for a quote."},
+            {"q": "What is the difference between a fractional CTO and an advisor?",
+             "a": "An advisor gives periodic guidance; a fractional CTO is accountable for execution. As your fractional CTO I make and own technical decisions, lead hiring, and drive delivery — part-time but hands-on — rather than only reviewing from the outside."},
+            {"q": "When should a startup hire a fractional CTO?",
+             "a": "When you need senior technical direction — architecture, hiring, delivery — but cannot yet justify or fill a full-time CTO role. It is ideal for early-stage startups, non-technical founders, and teams between technical leaders."},
+            {"q": "What does a fractional CTO engagement include?",
+             "a": "Typically: technical strategy and architecture, the engineering hiring plan and interviews, delivery oversight, and decisions on tooling, AI and build-vs-buy. The exact scope is tailored to your stage and reviewed as you grow."},
+        ],
+        # custom development service page
+        "cdev_title": "Custom Software & Project Development (AI-focused) | iskeru",
+        "cdev_desc": "Custom software and project development, end to end — AI services, integrations and extraction pipelines built by a Principal Engineer. Get a quote.",
+        "cdev_eyebrow": "Custom development",
+        "cdev_h1": "Custom project development",
+        "cdev_lede": "End-to-end custom software development for companies and startups — from a scoped project to a long-running build — with a focus on AI services, integrations and turning messy data into structured systems.",
+        "cdev_what_title": "Custom software development, end to end",
+        "cdev_what_p": "I take projects from idea to production: backend, integrations and the final user experience. The focus is AI services — LLM-powered features, extraction pipelines that turn PDFs and statements into structured data — plus payment flows (Pix, boletos) and third-party API integrations.",
+        "cdev_proof_title": "Built and shipped, not just specced",
+        "cdev_proof_p": "I build my own products at iskeru — boletim, minhabufunfa, cevem and lineu-ai — on top of 18 years shipping production systems and founding-team experience at QuintoAndar. Custom projects get the same end-to-end engineering.",
+        "cdev_cta": "Scope a custom development project",
+        "cdev_faq": [
+            {"q": "How do you scope a custom software project?",
+             "a": "We start with a short discovery to pin down the problem, the must-have outcomes and the constraints, then I propose a phased plan with a clear first milestone. Scoping is deliberately small at first so we validate direction before committing to a full build."},
+            {"q": "Do you build AI and LLM-powered features?",
+             "a": "Yes — AI services are the core focus: LLM-powered features, document and statement extraction pipelines, and automation. I have shipped these in production (for example reading bank statements and boletos into structured data) rather than only prototyping them."},
+            {"q": "Can you work with my existing team and codebase?",
+             "a": "Yes. I can deliver a project end to end on my own or embed with your team — reviewing the codebase, setting up architecture and integrations, and leaving it maintainable. This pairs naturally with fractional-CTO engagements."},
+            {"q": "What does a custom development project cost?",
+             "a": "It depends on scope. Small, well-defined projects are quoted as a fixed phase; larger or evolving builds run on a time basis with milestones. After the discovery call you get a written scope and estimate — email contato@iskeru.com to start."},
+        ],
         # 404
         "nf_title": "Page not found — iskeru",
         "nf_desc": "The page you were looking for doesn't exist. Head back to the iskeru home page or browse the products.",
@@ -349,7 +403,7 @@ T = {
         "products_h1": "Ferramentas focadas, organizadas por área.",
         "products_lede": "A iskeru constrói produtos independentes — alguns já no ar, outros a caminho. Conheça-os por área abaixo.",
         "about_title": "Moacyr Ricardo — Principal Engineer, CTO Fracional e Advisor",
-        "about_desc": "Moacyr Ricardo — Principal Engineer, CTO Fracional e advisor. Time fundador, Diretor e Principal Engineer na QuintoAndar (2013–2025). 18 anos construindo software, com foco em serviços de IA.",
+        "about_desc": "Moacyr Ricardo — Principal Engineer, CTO Fracional e advisor. Time fundador, Diretor e Principal Engineer na QuintoAndar. 18 anos construindo software.",
         "about_eyebrow": "Perfil",
         "about_lede": "18 anos construindo software — de one-man-team a liderar 15+ times e 200+ serviços. Assessoro empresas e startups e crio meus próprios produtos, com foco em serviços de IA.",
         "bg_title": "Trajetória",
@@ -378,6 +432,48 @@ T = {
         "oss_sub": "Alguns projetos públicos — peças por trás dos produtos.",
         "oss_all": "Ver todos os projetos no GitHub",
         "view_gh": "Ver no GitHub",
+        # fractional CTO service page
+        "fcto_title": "CTO Fracional — Liderança de Engenharia Sob Demanda | iskeru",
+        "fcto_desc": "CTO Fracional: liderança de engenharia, contratação e direção técnica em meio período, com um Principal Engineer de time fundador. Advisory também.",
+        "fcto_eyebrow": "CTO Fracional",
+        "fcto_h1": "CTO Fracional",
+        "fcto_lede": "Liderança de engenharia em meio período para startups e empresas que precisam de direção técnica sênior sem uma contratação full-time. Defino arquitetura, formo e desenvolvo times e mantenho a entrega no rumo.",
+        "fcto_what_title": "O que um CTO fracional faz por você",
+        "fcto_what_p": "Como seu CTO fracional eu assumo a direção técnica: decisões de arquitetura e roadmap, contratação e formação de time, qualidade de código e de entrega, e as decisões difíceis de build-vs-buy e de IA — liderança de engenharia sob demanda, no tamanho que você realmente precisa.",
+        "fcto_proof_title": "Liderança comprovada, não só um título",
+        "fcto_proof_p": "Fiz parte do time fundador da QuintoAndar, uma das maiores proptechs da América Latina, como Diretor e Principal Engineer — ajudando a escalar a engenharia para 15+ times e 200+ serviços, e contratando e desenvolvendo as pessoas que tocam esses times.",
+        "fcto_cta": "Conversar sobre um trabalho de CTO fracional",
+        "fcto_faq": [
+            {"q": "Quanto custa um CTO fracional?",
+             "a": "Um CTO fracional é remunerado pela atuação em meio período — em geral um valor mensal dimensionado por uma quantidade de dias por mês — então você tem liderança de engenharia sênior por uma fração do salário de um CTO full-time. Escopo e valor são combinados antes, conforme os dias necessários; escreva para contato@iskeru.com para um orçamento."},
+            {"q": "Qual a diferença entre um CTO fracional e um advisor?",
+             "a": "Um advisor dá orientação pontual; um CTO fracional é responsável pela execução. Como seu CTO fracional eu tomo e assumo as decisões técnicas, lidero a contratação e conduzo a entrega — em meio período, mas mão na massa — e não apenas reviso de fora."},
+            {"q": "Quando uma startup deve contratar um CTO fracional?",
+             "a": "Quando precisa de direção técnica sênior — arquitetura, contratação, entrega — mas ainda não justifica ou não consegue preencher um CTO full-time. É ideal para startups em estágio inicial, fundadores não técnicos e times entre líderes técnicos."},
+            {"q": "O que está incluído em um trabalho de CTO fracional?",
+             "a": "Em geral: estratégia técnica e arquitetura, plano de contratação de engenharia e entrevistas, acompanhamento de entrega e decisões sobre ferramentas, IA e build-vs-buy. O escopo exato é ajustado ao seu estágio e revisado conforme você cresce."},
+        ],
+        # custom development service page
+        "cdev_title": "Desenvolvimento de Software e Projetos Sob Medida (foco em IA) | iskeru",
+        "cdev_desc": "Desenvolvimento de software e projetos sob medida, ponta a ponta — serviços de IA, integrações e pipelines de extração, por um Principal Engineer.",
+        "cdev_eyebrow": "Desenvolvimento",
+        "cdev_h1": "Desenvolvimento de projetos sob medida",
+        "cdev_lede": "Desenvolvimento de software sob medida, de ponta a ponta, para empresas e startups — de um projeto pontual a um build de longo prazo — com foco em serviços de IA, integrações e em transformar dados bagunçados em sistemas estruturados.",
+        "cdev_what_title": "Desenvolvimento de software sob medida, ponta a ponta",
+        "cdev_what_p": "Levo projetos da ideia à produção: backend, integrações e a experiência final do usuário. O foco são serviços de IA — recursos com LLMs, pipelines de extração que transformam PDFs e extratos em dados estruturados — além de fluxos de pagamento (Pix, boletos) e integrações com APIs de terceiros.",
+        "cdev_proof_title": "Construído e lançado, não só especificado",
+        "cdev_proof_p": "Construo meus próprios produtos na iskeru — boletim, minhabufunfa, cevem e lineu-ai — sobre 18 anos lançando sistemas de produção e a experiência de time fundador na QuintoAndar. Projetos sob medida recebem a mesma engenharia de ponta a ponta.",
+        "cdev_cta": "Especificar um projeto de desenvolvimento sob medida",
+        "cdev_faq": [
+            {"q": "Como você define o escopo de um projeto sob medida?",
+             "a": "Começamos com uma descoberta curta para delimitar o problema, os resultados essenciais e as restrições; então proponho um plano em fases com um primeiro marco claro. O escopo inicial é propositalmente pequeno, para validar a direção antes de comprometer um build completo."},
+            {"q": "Você desenvolve recursos com IA e LLMs?",
+             "a": "Sim — serviços de IA são o foco principal: recursos com LLMs, pipelines de extração de documentos e extratos, e automação. Já coloquei isso em produção (por exemplo, lendo extratos bancários e boletos em dados estruturados), e não apenas em protótipo."},
+            {"q": "Você trabalha com meu time e código existentes?",
+             "a": "Sim. Posso entregar um projeto de ponta a ponta sozinho ou me integrar ao seu time — revisando o código, definindo arquitetura e integrações e deixando tudo sustentável. Isso combina naturalmente com trabalhos de CTO fracional."},
+            {"q": "Quanto custa um projeto de desenvolvimento sob medida?",
+             "a": "Depende do escopo. Projetos pequenos e bem definidos são orçados como uma fase de valor fechado; builds maiores ou em evolução rodam por tempo com marcos. Após a conversa de descoberta você recebe um escopo e estimativa por escrito — escreva para contato@iskeru.com para começar."},
+        ],
         # 404
         "nf_title": "Página não encontrada — iskeru",
         "nf_desc": "A página que você procurava não existe. Volte para a página inicial da iskeru ou conheça os produtos.",
@@ -437,13 +533,89 @@ def icon(name, cls="icon"):
 
 
 # ----------------------------------------------------------------------------
+# Structured data (JSON-LD)
+# ----------------------------------------------------------------------------
+# Each page emits a site-wide Person plus, on the service pages, a Service node
+# (provider -> the Person) and a FAQPage. Everything is serialized with
+# json.dumps so quoting/escaping is correct by construction — never hand-built.
+
+KNOWS_ABOUT = {
+    "en": ["Software architecture", "Artificial intelligence", "LLM integrations",
+           "Engineering leadership", "Fintech", "Payment systems", "Pix"],
+    "pt": ["Arquitetura de software", "Inteligência artificial", "Integrações com LLMs",
+           "Liderança de engenharia", "Fintech", "Sistemas de pagamento", "Pix"],
+}
+
+PERSON_ID = SITE + "/about/#person"
+
+
+def person_ld(lang):
+    """The site-wide Person node. Referenced by @id from Service providers."""
+    job_title = ("Principal Engineer, Fractional CTO & Advisor" if lang == "en"
+                 else "Principal Engineer, CTO Fracional e Advisor")
+    return {
+        "@type": "Person",
+        "@id": PERSON_ID,
+        "name": PERSON_NAME,
+        "url": SITE + ROUTES["about"][lang],
+        "jobTitle": job_title,
+        "image": SITE + "/assets/moacyr.jpg",
+        "sameAs": [LINKEDIN, GITHUB],
+        "knowsAbout": KNOWS_ABOUT[lang],
+        "worksFor": {"@type": "Organization", "name": "iskeru", "url": SITE},
+    }
+
+
+def service_ld(name, service_type, desc, url):
+    """A ProfessionalService offered by the Person, for a service page."""
+    return {
+        "@type": "ProfessionalService",
+        "name": name,
+        "serviceType": service_type,
+        "description": desc,
+        "url": url,
+        "provider": {"@id": PERSON_ID},
+        "areaServed": [
+            {"@type": "Country", "name": "Brazil"},
+            {"@type": "AdministrativeArea", "name": "Remote / Worldwide"},
+        ],
+    }
+
+
+def faq_ld(faqs):
+    """A FAQPage node from a list of {q, a} dicts (eligible for FAQ rich results)."""
+    return {
+        "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": f["q"],
+             "acceptedAnswer": {"@type": "Answer", "text": f["a"]}}
+            for f in faqs
+        ],
+    }
+
+
+def ld_script(nodes):
+    """Render one ld+json <script> wrapping the given nodes in an @graph.
+
+    Drops any None entries so callers can pass optional nodes inline. Returns ""
+    when there is nothing to emit. json.dumps handles all escaping."""
+    graph = [n for n in nodes if n]
+    if not graph:
+        return ""
+    doc = {"@context": "https://schema.org", "@graph": graph}
+    payload = json.dumps(doc, ensure_ascii=False, indent=2)
+    return f'  <script type="application/ld+json">\n{payload}\n  </script>\n'
+
+
+# ----------------------------------------------------------------------------
 # Rendering helpers
 # ----------------------------------------------------------------------------
 
-def head(lang, key, title, desc):
+def head(lang, key, title, desc, ld=""):
     canonical = SITE + ROUTES[key][lang]
     en_url = SITE + ROUTES[key]["en"]
     pt_url = SITE + ROUTES[key]["pt"]
+    og_image = SITE + OG_IMAGE
     return f"""<!DOCTYPE html>
 <html lang="{HTML_LANG[lang]}">
 <head>
@@ -462,14 +634,16 @@ def head(lang, key, title, desc):
   <meta property="og:description" content="{desc}" />
   <meta property="og:url" content="{canonical}" />
   <meta property="og:locale" content="{OG_LOCALE[lang]}" />
-  <meta name="twitter:card" content="summary" />
+  <meta property="og:image" content="{og_image}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="{og_image}" />
 
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/assets/styles.css" />
-</head>
+{ld}</head>
 <body>
   <a class="skip-link" href="#main">{T[lang]['skip']}</a>
 """
@@ -494,7 +668,8 @@ def header(lang, key):
       </button>
       <nav id="site-nav" class="site-nav" aria-label="{nav['products']}">
         <a href="{ROUTES['products'][lang]}">{nav['products']}</a>
-        <a href="{home}#company">{nav['company']}</a>
+        <a href="{ROUTES['fractional_cto'][lang]}">{nav['fractional_cto']}</a>
+        <a href="{ROUTES['custom_dev'][lang]}">{nav['custom_dev']}</a>
         <a href="{ROUTES['about'][lang]}">{nav['consulting']}</a>
         <a href="{home}#contact">{nav['contact']}</a>
         {switch_html}
@@ -515,6 +690,8 @@ def footer(lang):
       </div>
       <nav class="footer-nav" aria-label="{nav['products']}">
         <a href="{ROUTES['products'][lang]}">{nav['products']}</a>
+        <a href="{ROUTES['fractional_cto'][lang]}">{nav['fractional_cto']}</a>
+        <a href="{ROUTES['custom_dev'][lang]}">{nav['custom_dev']}</a>
         <a href="{ROUTES['about'][lang]}">{nav['consulting']}</a>
         <a href="{home}#contact">{nav['contact']}</a>
       </nav>
@@ -539,8 +716,8 @@ def footer(lang):
 """
 
 
-def page(lang, key, title, desc, body):
-    return head(lang, key, title, desc) + header(lang, key) + body + footer(lang)
+def page(lang, key, title, desc, body, ld=""):
+    return head(lang, key, title, desc, ld) + header(lang, key) + body + footer(lang)
 
 
 def badge(status, lang):
@@ -643,7 +820,11 @@ def render_home(lang):
 {stats}
         </div>
         <div class="pills">{pills}</div>
-        <a class="btn btn-primary" href="{ROUTES['about'][lang]}"><span>{t['view_profile']}</span>{icon('arrow-right')}</a>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="{ROUTES['fractional_cto'][lang]}"><span>{NAV[lang]['fractional_cto']}</span>{icon('arrow-right')}</a>
+          <a class="btn btn-primary" href="{ROUTES['custom_dev'][lang]}"><span>{NAV[lang]['custom_dev']}</span>{icon('arrow-right')}</a>
+          <a class="btn btn-ghost" href="{ROUTES['about'][lang]}"><span>{t['view_profile']}</span>{icon('arrow-right')}</a>
+        </div>
       </div>
     </section>
 
@@ -655,7 +836,8 @@ def render_home(lang):
     </section>
   </main>
 """
-    return page(lang, "home", t["home_title"], t["home_desc"], body)
+    return page(lang, "home", t["home_title"], t["home_desc"], body,
+                ld=ld_script([person_ld(lang)]))
 
 
 def render_products(lang):
@@ -681,7 +863,8 @@ def render_products(lang):
 {chr(10).join(sections)}
   </main>
 """
-    return page(lang, "products", t["products_page_title"], t["products_page_desc"], body)
+    return page(lang, "products", t["products_page_title"], t["products_page_desc"], body,
+                ld=ld_script([person_ld(lang)]))
 
 
 def cap_card(c, lang):
@@ -834,7 +1017,107 @@ def render_about(lang):
     </section>
   </main>
 """
-    return page(lang, "about", t["about_title"], t["about_desc"], body)
+    return page(lang, "about", t["about_title"], t["about_desc"], body,
+                ld=ld_script([person_ld(lang)]))
+
+
+def faq_section(title, faqs):
+    """Render an FAQ section from a list of {q, a} dicts using native <details>
+    disclosure (no JS needed). The same data drives the FAQPage JSON-LD."""
+    items = "\n".join(
+        f"""          <details class="faq-item">
+            <summary>{f['q']}</summary>
+            <p>{f['a']}</p>
+          </details>""" for f in faqs)
+    return f"""    <section class="section section-alt">
+      <div class="container narrow">
+        <h2 class="section-title">{title}</h2>
+        <div class="faq">
+{items}
+        </div>
+      </div>
+    </section>"""
+
+
+def service_hero(eyebrow, h1, lede, cta_label):
+    return f"""    <section class="hero">
+      <div class="container narrow">
+        <p class="eyebrow">{eyebrow}</p>
+        <h1>{h1}</h1>
+        <p class="lede">{lede}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="mailto:{EMAIL}">{icon('mail')}<span>{cta_label}</span></a>
+        </div>
+      </div>
+    </section>"""
+
+
+def service_prose(title, body_html):
+    return f"""    <section class="section">
+      <div class="container narrow">
+        <h2 class="section-title">{title}</h2>
+        <p>{body_html}</p>
+      </div>
+    </section>"""
+
+
+FAQ_TITLE = {"en": "Frequently asked questions", "pt": "Perguntas frequentes"}
+
+
+def render_fractional_cto(lang):
+    t = T[lang]
+    stats = "\n".join(stat_item(s, lang) for s in STATS)
+    body = f"""  <main id="main">
+{service_hero(t['fcto_eyebrow'], t['fcto_h1'], t['fcto_lede'], t['fcto_cta'])}
+
+{service_prose(t['fcto_what_title'], t['fcto_what_p'])}
+
+    <section class="section section-alt">
+      <div class="container narrow">
+        <h2 class="section-title">{t['fcto_proof_title']}</h2>
+        <p>{t['fcto_proof_p']}</p>
+        <div class="stats">
+{stats}
+        </div>
+      </div>
+    </section>
+
+{faq_section(FAQ_TITLE[lang], t['fcto_faq'])}
+  </main>
+"""
+    url = SITE + ROUTES["fractional_cto"][lang]
+    svc = service_ld(t['fcto_h1'], t['fcto_eyebrow'], t['fcto_desc'], url)
+    ld = ld_script([person_ld(lang), svc, faq_ld(t['fcto_faq'])])
+    return page(lang, "fractional_cto", t["fcto_title"], t["fcto_desc"], body, ld=ld)
+
+
+def render_custom_dev(lang):
+    t = T[lang]
+    caps = "\n".join(cap_card(c, lang) for c in CAPABILITIES)
+    body = f"""  <main id="main">
+{service_hero(t['cdev_eyebrow'], t['cdev_h1'], t['cdev_lede'], t['cdev_cta'])}
+
+{service_prose(t['cdev_what_title'], t['cdev_what_p'])}
+
+    <section class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">{t['cap_title']}</h2>
+        <p class="section-sub">{t['cap_sub']}</p>
+        <div class="cards">
+{caps}
+        </div>
+      </div>
+    </section>
+
+{service_prose(t['cdev_proof_title'], t['cdev_proof_p'])}
+
+{faq_section(FAQ_TITLE[lang], t['cdev_faq'])}
+  </main>
+"""
+    url = SITE + ROUTES["custom_dev"][lang]
+    svc = service_ld(t['cdev_h1'], t['cdev_eyebrow'], t['cdev_desc'], url)
+    ld = ld_script([person_ld(lang), svc, faq_ld(t['cdev_faq'])])
+    return page(lang, "custom_dev", t["cdev_title"], t["cdev_desc"], body, ld=ld)
 
 
 def notfound_block(lang):
@@ -864,14 +1147,16 @@ def render_notfound():
 {blocks}
   </main>
 """
-    return page("en", "notfound", t["nf_title"], t["nf_desc"], body)
+    return page("en", "notfound", t["nf_title"], t["nf_desc"], body,
+                ld=ld_script([person_ld("en")]))
 
 
 # ----------------------------------------------------------------------------
 # Output
 # ----------------------------------------------------------------------------
 
-RENDERERS = {"home": render_home, "products": render_products, "about": render_about}
+RENDERERS = {"home": render_home, "products": render_products, "about": render_about,
+             "fractional_cto": render_fractional_cto, "custom_dev": render_custom_dev}
 
 
 def out_path(route):
@@ -905,7 +1190,9 @@ def render_sitemap():
             continue  # the 404 is error-only — never advertised in the sitemap
         for lang in LANGS:
             loc = SITE + ROUTES[key][lang]
-            prio = "1.0" if key == "home" else ("0.9" if key == "products" else "0.7")
+            # Home top; products + the commercial service pages high (0.9); rest 0.7.
+            high = {"products", "fractional_cto", "custom_dev"}
+            prio = "1.0" if key == "home" else ("0.9" if key in high else "0.7")
             alts = "".join(
                 f'\n    <xhtml:link rel="alternate" hreflang="{HTML_LANG[l]}" href="{SITE + ROUTES[key][l]}" />'
                 for l in LANGS)
@@ -925,6 +1212,38 @@ def clean():
     os.makedirs(DIST)
 
 
+_LD_RE = re.compile(r'<script type="application/ld\+json">\s*(.*?)\s*</script>', re.DOTALL)
+_DESC_RE = re.compile(r'<meta name="description" content="(.*?)" />')
+META_DESC_MAX = 155  # SEO best practice: descriptions over ~155 chars get truncated
+
+
+def seo_selfcheck():
+    """Fail the build if any emitted page has invalid JSON-LD or an over-long
+    meta description. This is the in-build verification the spec calls for: every
+    ld+json block must json.loads cleanly and every description must stay ≤155."""
+    problems = []
+    ld_blocks = 0
+    for root, _, files in os.walk(DIST):
+        for fn in files:
+            if not fn.endswith(".html"):
+                continue
+            rel = os.path.relpath(os.path.join(root, fn), DIST)
+            content = open(os.path.join(root, fn), encoding="utf-8").read()
+            for block in _LD_RE.findall(content):
+                ld_blocks += 1
+                try:
+                    json.loads(block)
+                except json.JSONDecodeError as exc:
+                    problems.append(f"{rel}: invalid JSON-LD ({exc})")
+            for desc in _DESC_RE.findall(content):
+                if len(desc) > META_DESC_MAX:
+                    problems.append(f"{rel}: meta description {len(desc)} > {META_DESC_MAX} chars")
+    if problems:
+        raise SystemExit("SEO self-check failed:\n  " + "\n  ".join(problems))
+    print(f"seo self-check ok ({ld_blocks} JSON-LD blocks valid, descriptions within "
+          f"{META_DESC_MAX} chars)")
+
+
 def main():
     clean()
     for key, render in RENDERERS.items():
@@ -934,6 +1253,7 @@ def main():
     write(os.path.join(DIST, "404.html"), render_notfound())
     write(os.path.join(DIST, "sitemap.xml"), render_sitemap())
     copy_static()
+    seo_selfcheck()
     print("done. output in dist/")
 
 

@@ -1,5 +1,8 @@
 # 002 — SEO positioning: intent-matched service pages
 
+> Status: **doing** — branch `moacyrricardo/spec-002-seo-service-pages`.
+> No Linear ticket for this work. PR open and unmerged (stays `doing` until merge).
+
 ## Context
 
 The profile (`/about/`) is the commercial surface of iskeru.com, but it is written
@@ -112,3 +115,68 @@ service pages — do not duplicate the whole bio.
 - **`og-image.png` asset** must be designed/produced; this spec assumes one
   1200×630 image. A per-page image variant is deferred.
 - No analytics/rank-tracking setup is included.
+
+## Implementation Notes
+
+Implemented as decided. Branch `moacyrricardo/spec-002-seo-service-pages`; PR
+open and unmerged (status stays `doing` until merge).
+
+How the implementation maps to the existing `build.py` idioms:
+
+- **`ROUTES`** gained `fractional_cto` (`/fractional-cto/`, `/pt/cto-fracional/`)
+  and `custom_dev` (`/custom-development/`, `/pt/desenvolvimento/`). Because they
+  go through the shared `page()`/`head()`/`header()` template, canonical, the
+  hreflang alternates and the EN | PT switcher all resolve automatically.
+- **`NAV`** gained keyword anchors (EN "Fractional CTO" / "Custom development",
+  PT "CTO Fracional" / "Desenvolvimento"), wired into both the header and footer
+  nav and into the home "Work with me" teaser — the spec's internal-linking item.
+- **`T`** gained `fcto_*` and `cdev_*` copy blocks (title, ≤155-char meta desc,
+  eyebrow, h1, lede, two prose sections, and a 4-item `faq` list of `{q, a}`) for
+  both languages. Proof reuses the existing `STATS` (200+ engineers …) and
+  `CAPABILITIES` data rather than duplicating the bio.
+- **Structured data** is a new `json.dumps`-based layer: `person_ld()` (site-wide
+  Person with `@id`, emitted on *every* page), `service_ld()` (a
+  `ProfessionalService` whose `provider` references the Person by `@id`),
+  `faq_ld()` (a `FAQPage` from the same `faq` data), and `ld_script()` which wraps
+  the nodes in a single `@graph`. `head()`/`page()` gained an optional `ld`
+  argument; nothing is hand-formatted.
+- **`head()`** now emits `og:image`, `twitter:image` and
+  `twitter:card=summary_large_image`, all pointing at `/assets/og-image.png`
+  (`OG_IMAGE`). The whole `assets/` dir is already in `STATIC`, so the card ships
+  automatically once the design asset is dropped in.
+- **`render_sitemap()`** puts both service pages at priority `0.9` (same as
+  products) via a `high` set; the 404 stays excluded.
+- **`render_fractional_cto()` / `render_custom_dev()`** mirror `render_about()`
+  (hero + prose + proof + FAQ) and emit Person + Service + FAQPage JSON-LD.
+
+### Deviations / additions beyond the literal spec
+
+- **`seo_selfcheck()` added to `main()`.** The spec's verification section asks to
+  "validate JSON-LD … json.loads round-trip in build"; this makes it a build gate
+  that `json.loads` every emitted `ld+json` block and fails the build if any meta
+  description exceeds 155 chars. It caught the two pre-existing **`/about/`**
+  descriptions (196 / 191 chars), which were trimmed to ≤155 — a small in-scope
+  fix since `/about/` is part of this spec's commercial surface.
+- **`og-image.png` binary not produced.** Per the spec's fallback, the path is
+  referenced and copied via the `assets/` dir, but the actual 1200×630 card image
+  still needs to be designed/added. Until then that one URL 404s; everything else
+  resolves.
+- **FAQ uses native `<details>/<summary>`** (no JS) with a `.faq` style block in
+  `styles.css`; the same `faq` data drives both the visible accordion and the
+  `FAQPage` JSON-LD, keeping them in sync.
+- **Regression tests** added at `tests/test_seo_service_pages.py` (stdlib
+  `unittest`): build into a temp dir and assert the page/canonical/hreflang/
+  og/JSON-LD/title/description/sitemap/linking invariants.
+
+### Verification status
+
+Run in this environment: `python3 build.py` builds clean and the in-build
+`seo_selfcheck()` confirms all 11 JSON-LD blocks `json.loads` cleanly and every
+meta description is ≤155 chars. The four new HTML files + PT mirrors were read
+back from `dist/` and confirmed to have correct canonical/hreflang, og:image +
+`summary_large_image`, literal title/H1 phrases, the Person + ProfessionalService
++ FAQPage `@graph`, and four FAQ `<details>` each; `sitemap.xml` includes all four
+at priority 0.9 and excludes the 404. **Not run here** (sandbox blocked anything
+beyond `python3 build.py`): the `unittest` suite and serving `dist/` to curl the
+pages for an HTTP 200 + styled render — the caller should run
+`python3 -m unittest discover -s tests` and `python3 -m http.server -d dist 8000`.
