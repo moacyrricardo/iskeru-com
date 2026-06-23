@@ -1,5 +1,8 @@
 # 002 — SEO positioning: intent-matched service pages
 
+> Status: **doing** — branch `moacyrricardo/spec-002-seo-service-pages`.
+> No Linear ticket for this work. PR open and unmerged (stays `doing` until merge).
+
 ## Context
 
 The profile (`/about/`) is the commercial surface of iskeru.com, but it is written
