@@ -1,7 +1,8 @@
 # 002 — SEO positioning: intent-matched service pages
 
-> Status: **doing** — branch `moacyrricardo/spec-002-seo-service-pages`.
-> No Linear ticket for this work. PR open and unmerged (stays `doing` until merge).
+> Status: **done** — branch `moacyrricardo/spec-002-seo-service-pages`.
+> No Linear ticket for this work. Shipped via PR #2, merged to `main` 2026-06-23
+> (merge commit `7851d37`).
 
 ## Context
 
@@ -118,8 +119,11 @@ service pages — do not duplicate the whole bio.
 
 ## Implementation Notes
 
-Implemented as decided. Branch `moacyrricardo/spec-002-seo-service-pages`; PR
-open and unmerged (status stays `doing` until merge).
+Implemented as decided. Branch `moacyrricardo/spec-002-seo-service-pages`,
+shipped via PR #2 (merged to `main` 2026-06-23, merge commit `7851d37`). No
+`CONTRIBUTING.md` in this repo, so there is no change-division rule to assess
+against. No API modules (this is a static-site generator — its artifact is HTML,
+not a library consumed by another service), so no API-diff section applies.
 
 How the implementation maps to the existing `build.py` idioms:
 
@@ -170,13 +174,23 @@ How the implementation maps to the existing `build.py` idioms:
 
 ### Verification status
 
-Run in this environment: `python3 build.py` builds clean and the in-build
-`seo_selfcheck()` confirms all 11 JSON-LD blocks `json.loads` cleanly and every
-meta description is ≤155 chars. The four new HTML files + PT mirrors were read
-back from `dist/` and confirmed to have correct canonical/hreflang, og:image +
-`summary_large_image`, literal title/H1 phrases, the Person + ProfessionalService
-+ FAQPage `@graph`, and four FAQ `<details>` each; `sitemap.xml` includes all four
-at priority 0.9 and excludes the 404. **Not run here** (sandbox blocked anything
-beyond `python3 build.py`): the `unittest` suite and serving `dist/` to curl the
-pages for an HTTP 200 + styled render — the caller should run
-`python3 -m unittest discover -s tests` and `python3 -m http.server -d dist 8000`.
+All verifications passed:
+
+- `python3 build.py` builds clean; in-build `seo_selfcheck()` confirms all 11
+  JSON-LD blocks `json.loads` cleanly and every meta description is ≤155 chars.
+- The four new HTML files + PT mirrors were read back from `dist/` and confirmed
+  to have correct canonical/hreflang, `og:image` + `summary_large_image`, literal
+  title/H1 phrases, the Person + ProfessionalService + FAQPage `@graph`, and four
+  FAQ `<details>` each; `sitemap.xml` includes all four at priority 0.9 and
+  excludes the 404.
+- `python3 -m unittest discover -s tests` — **Ran 11 tests, OK**.
+- Served `dist/` via `python3 -m http.server`; all four pages returned **HTTP
+  200** and rendered styled — captured as four scrolling gifs under
+  `specs/evidence/002-*.gif` and embedded in PR #2.
+
+### Outstanding follow-up (deferred, not blocking)
+
+`assets/og-image.png` (1200×630 social card) was **never produced** — the pages
+reference `/assets/og-image.png`, so that single URL 404s until the image is
+designed and dropped into `assets/` (it then ships automatically via `STATIC`).
+Everything else resolves. Worth a small follow-up spec/task.
