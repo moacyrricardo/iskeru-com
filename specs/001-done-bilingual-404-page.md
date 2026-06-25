@@ -1,7 +1,9 @@
 # 001 — Custom bilingual 404 page
 
-> Status: **doing** — branch `moacyrricardo/spec-001-bilingual-404-page`.
-> No Linear ticket for this work. PR open and unmerged (stays `doing` until merge).
+> Status: **done** — branch `moacyrricardo/spec-001-bilingual-404-page`.
+> No Linear ticket for this work. Shipped via PR #1, merged to `main` 2026-06-22.
+> **Operational follow-up outstanding:** the nginx `error_page` directive on the
+> origin box is not yet applied — see Verification status.
 
 ## Context
 
@@ -107,9 +109,29 @@ How the implementation maps to the existing `build.py` idioms:
 - **nginx config** (`error_page 404 /404.html; location = /404.html { internal; }`)
   documented in `README.md` under a new "Custom 404" section; it lives on the
   origin box, not in the repo.
-- **Verification gap.** The runtime verification from the spec (`python3 build.py`,
-  serve, view the rendered page) was **not executed in the build environment**
-  because Python execution was unavailable there. The generation path is pure
-  deterministic string templating and was reviewed statically; the human should run
-  `python3 build.py` then `python3 -m http.server -d dist 8000` to confirm the
-  rendered page (this also produces the evidence gif).
+### Verification status
+
+The **build/repo side is done and deployed:**
+
+- `python3 build.py` produces `dist/404.html` (single root file, excluded from
+  `sitemap.xml`).
+- The page is live on the origin: `GET https://iskeru.com/404.html` → **200**,
+  styled, with both `lang="en"` and `lang="pt-BR"` sections and absolute asset
+  links (`/assets/styles.css`) — confirmed 2026-06-25.
+
+**Outstanding operational step (origin box, not the repo):** the nginx
+`error_page` directive is **not yet applied**, so an unknown URL currently falls
+back to nginx's bare default page rather than the custom one. Verified
+2026-06-25: `curl -I https://iskeru.com/<bogus>` returns `404` but with the
+default `nginx/1.24.0` body, and `/404.html` is still directly fetchable with
+`200` (which the `internal` clause is meant to prevent). To finish, add to the
+server block on the origin and reload:
+
+```nginx
+error_page 404 /404.html;
+location = /404.html { internal; }
+```
+
+This is the repo-external step the spec always called out (documented in
+`README.md` → "Custom 404"); the spec is marked `done` on the code deliverable
+with this wiring as the remaining ops task.
