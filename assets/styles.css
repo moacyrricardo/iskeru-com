@@ -264,6 +264,8 @@ h1, h2, h3 { font-family: var(--font-display); }
 .badge-soon { background: rgba(159, 176, 196, 0.16); color: var(--soon); }
 .badge-count { background: var(--accent-soft); color: var(--accent); }
 .badge-count::before { display: none; }
+.badge-ai { background: var(--accent-grad); color: var(--accent-ink); }
+.badge-ai::before { display: none; }
 
 /* ---------- Cards (home highlights) ---------- */
 .cards {
