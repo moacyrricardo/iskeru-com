@@ -61,19 +61,25 @@ NAV = {
 BADGE = {"live": {"en": "Live", "pt": "No ar"},
          "soon": {"en": "Coming soon", "pt": "Em breve"}}
 
-CATEGORIES = ["finance", "events", "buildings"]
+CATEGORIES = ["finance", "automation", "construction", "events", "buildings"]
 CAT_NAME = {
-    "finance":   {"en": "Finance", "pt": "Finanças"},
-    "events":    {"en": "Events", "pt": "Eventos"},
-    "buildings": {"en": "Buildings & condos", "pt": "Condomínios"},
+    "finance":      {"en": "Finance", "pt": "Finanças"},
+    "automation":   {"en": "Automation", "pt": "Automação"},
+    "construction": {"en": "Construction & renovation", "pt": "Obras & reformas"},
+    "events":       {"en": "Events", "pt": "Eventos"},
+    "buildings":    {"en": "Buildings & condos", "pt": "Condomínios"},
 }
 CAT_TAG = {
-    "finance":   {"en": "Organize, automate and understand your money",
-                  "pt": "Organização, automação e finanças pessoais"},
-    "events":    {"en": "Invitations & confirmation of attendance",
-                  "pt": "Convites & confirmação de presença"},
-    "buildings": {"en": "Building management over WhatsApp",
-                  "pt": "Gestão predial pelo WhatsApp"},
+    "finance":      {"en": "Organize, automate and understand your money",
+                     "pt": "Organização, automação e finanças pessoais"},
+    "automation":   {"en": "Self-healing automation, driven by AI",
+                     "pt": "Automação autorregenerativa, movida a IA"},
+    "construction": {"en": "Track your renovation, end to end",
+                     "pt": "Acompanhe sua obra, do começo ao fim"},
+    "events":       {"en": "Invitations & confirmation of attendance",
+                     "pt": "Convites & confirmação de presença"},
+    "buildings":    {"en": "Building management over WhatsApp",
+                     "pt": "Gestão predial pelo WhatsApp"},
 }
 
 PRODUCTS = [
@@ -118,7 +124,7 @@ PRODUCTS = [
         },
     },
     {
-        "slug": "lineu-ai", "cat": "finance", "status": "soon",
+        "slug": "lineu-ai", "cat": "finance", "status": "soon", "ai": True,
         "name": "lineu" + NBHY + "ai", "icon": "sparkles",
         "en": {
             "tag": "AI financial automation",
@@ -158,7 +164,7 @@ PRODUCTS = [
         },
     },
     {
-        "slug": "pacdoorman", "cat": "buildings", "status": "soon",
+        "slug": "pacdoorman", "cat": "buildings", "status": "soon", "ai": True,
         "name": "pacdoorman", "icon": "package",
         "cta_href": "mailto:" + EMAIL + "?subject=pacdoorman",
         "en": {
@@ -179,6 +185,54 @@ PRODUCTS = [
                          "Retirada por código de 6 dígitos ou por nome", "Cadastro de moradores por mensagem ou CSV",
                          "Tudo pelo WhatsApp — sem app para instalar"],
             "note": "Em desenvolvimento — novidades em breve.",
+            "cta": "Tenho interesse",
+        },
+    },
+    {
+        "slug": "hive", "cat": "automation", "status": "soon", "ai": True,
+        "name": "hive", "icon": "cpu",
+        "cta_href": "mailto:" + EMAIL + "?subject=hive",
+        "en": {
+            "tag": "AI browser & desktop automation",
+            "short": "Automate any browser or desktop workflow in plain language — undetectable and self-healing.",
+            "desc": "A self-healing RPA platform that automates browser and desktop workflows from natural language. Hive drives a real browser on real hardware, so the automation can't be fingerprinted as a bot, and an LLM with vision reads each screen to decide the next step — so your automations survive UI redesigns and repair themselves. A central “Queen” orchestrates lightweight workers running on Raspberry Pis or any desktop.",
+            "features": ["Describe the task in plain language", "Real browser on real hardware — no bot detection",
+                         "LLM vision adapts to UI changes automatically", "Reusable workflow templates"],
+            "note": "In development — coming soon.",
+            "cta": "I'm interested",
+        },
+        "pt": {
+            "tag": "Automação de navegador &amp; desktop com IA",
+            "short": "Automatize qualquer fluxo de navegador ou desktop em linguagem natural — indetectável e autorregenerativo.",
+            "desc": "Uma plataforma de RPA autorregenerativa que automatiza fluxos de navegador e desktop a partir de linguagem natural. O Hive controla um navegador real em hardware real, então a automação não é identificada como robô, e uma IA com visão lê cada tela para decidir o próximo passo — assim suas automações sobrevivem a mudanças de interface e se consertam sozinhas. Uma “Rainha” central orquestra workers leves rodando em Raspberry Pis ou qualquer desktop.",
+            "features": ["Descreva a tarefa em linguagem natural", "Navegador real em hardware real — sem detecção de robô",
+                         "Visão por IA se adapta a mudanças de interface", "Templates de fluxo reutilizáveis"],
+            "note": "Em desenvolvimento — em breve.",
+            "cta": "Tenho interesse",
+        },
+    },
+    {
+        "slug": "obralog", "cat": "construction", "status": "soon", "ai": True,
+        "name": "obralog", "icon": "layers",
+        "cta_href": "mailto:" + EMAIL + "?subject=obralog",
+        "en": {
+            "tag": "AI renovation & works tracking",
+            "short": "Track your renovation end to end — contractor reports parsed by AI, every fact traceable to its source.",
+            "desc": "A renovation tracking platform for homeowners. Upload contractor progress reports and obralog extracts tasks and events page by page with AI, keeping the source quote behind every item so you can trace it back. See the project by timeline, room, service type or contractor; keep receipts, invoices and conversation exports structured and searchable; and log on-site inspections with photos straight from your phone.",
+            "features": ["Contractor PDF reports parsed by AI", "Timeline, room, service and contractor views",
+                         "Receipts & invoices structured and searchable", "Mobile on-site inspections with photos",
+                         "Full provenance — trace every fact to its source"],
+            "note": "In development — coming soon.",
+            "cta": "I'm interested",
+        },
+        "pt": {
+            "tag": "Acompanhamento de obras &amp; reformas com IA",
+            "short": "Acompanhe sua reforma do início ao fim — relatórios da obra lidos por IA, com cada dado rastreável à fonte.",
+            "desc": "Uma plataforma de acompanhamento de reformas para quem constrói ou reforma. Envie os relatórios de andamento do empreiteiro e o obralog extrai tarefas e eventos página por página com IA, guardando a citação de origem de cada item para você rastrear depois. Veja a obra por linha do tempo, cômodo, tipo de serviço ou prestador; mantenha recibos, notas fiscais e conversas estruturados e pesquisáveis; e registre vistorias no local com fotos direto do celular.",
+            "features": ["Relatórios em PDF do empreiteiro lidos por IA", "Visões por linha do tempo, cômodo, serviço e prestador",
+                         "Recibos e notas fiscais estruturados e pesquisáveis", "Vistorias no local com fotos pelo celular",
+                         "Rastreabilidade total — cada dado ligado à sua fonte"],
+            "note": "Em desenvolvimento — em breve.",
             "cta": "Tenho interesse",
         },
     },
@@ -269,7 +323,7 @@ T = {
         "skip": "Skip to content",
         # home
         "home_title": "iskeru — digital products that simplify everyday life",
-        "home_desc": "iskeru builds focused digital products: cevem (invites & RSVP), boletim & minhabufunfa (finance), lineu-ai and pacdoorman (coming soon).",
+        "home_desc": "iskeru builds focused digital products across finance, AI automation, construction and events — boletim, hive, obralog, cevem and more.",
         "hero_h1": "Digital products that simplify everyday life.",
         "hero_lede": "We build focused web tools — no noise, no clutter — each solving one real problem well. See what's live and what's on the way.",
         "btn_products": "See products",
@@ -289,7 +343,7 @@ T = {
         "contact_text": "Want to talk, ask a question or propose a partnership? Email ",
         # products
         "products_page_title": "Products — iskeru",
-        "products_page_desc": "All iskeru products by area: Finance (boletim, minhabufunfa, lineu-ai), Events (cevem) and Buildings (pacdoorman).",
+        "products_page_desc": "All iskeru products by area: Finance, AI Automation, Construction, Events and Buildings — boletim, hive, obralog, cevem and more.",
         "products_eyebrow": "Products",
         "products_h1": "Focused tools, organized by area.",
         "products_lede": "iskeru builds independent products — some live, some on the way. Browse them by area below.",
@@ -379,7 +433,7 @@ T = {
         "footer_note": "Produtos digitais que simplificam o dia a dia.",
         "skip": "Pular para o conteúdo",
         "home_title": "iskeru — produtos digitais que simplificam o dia a dia",
-        "home_desc": "A iskeru cria produtos digitais focados: cevem (convites e RSVP), boletim e minhabufunfa (finanças), lineu-ai e pacdoorman (em breve).",
+        "home_desc": "A iskeru cria produtos digitais focados em finanças, automação com IA, obras e eventos — boletim, hive, obralog, cevem e mais.",
         "hero_h1": "Produtos digitais que simplificam o dia a dia.",
         "hero_lede": "Construímos ferramentas web focadas, sem ruído e sem complicação — cada uma resolvendo bem um problema real. Conheça o que já está no ar e o que está por vir.",
         "btn_products": "Ver produtos",
@@ -398,7 +452,7 @@ T = {
         "contact_title": "Contato",
         "contact_text": "Quer falar com a gente, tirar uma dúvida ou propor uma parceria? Escreva para ",
         "products_page_title": "Produtos — iskeru",
-        "products_page_desc": "Todos os produtos da iskeru por área: Finanças (boletim, minhabufunfa, lineu-ai), Eventos (cevem) e Condomínios (pacdoorman).",
+        "products_page_desc": "Todos os produtos da iskeru por área: Finanças, Automação com IA, Obras, Eventos e Condomínios — boletim, hive, obralog, cevem e mais.",
         "products_eyebrow": "Produtos",
         "products_h1": "Ferramentas focadas, organizadas por área.",
         "products_lede": "A iskeru constrói produtos independentes — alguns já no ar, outros a caminho. Conheça-os por área abaixo.",
@@ -490,7 +544,8 @@ T = {
 # Icons (inline SVG, Lucide-style line icons + brand fills; MIT-licensed art)
 # ----------------------------------------------------------------------------
 
-CAT_ICON = {"finance": "banknote", "events": "calendar", "buildings": "building"}
+CAT_ICON = {"finance": "banknote", "automation": "plug", "construction": "building",
+            "events": "calendar", "buildings": "building"}
 HELP_ICONS = ["users", "compass", "code"]
 
 ICONS = {
@@ -725,6 +780,10 @@ def badge(status, lang):
     return f'<span class="badge {cls}">{BADGE[status][lang]}</span>'
 
 
+def ai_pill(p):
+    return '<span class="badge badge-ai">AI</span>' if p.get("ai") else ''
+
+
 def product_article(p, lang):
     c = p[lang]
     soon = p["status"] == "soon"
@@ -743,6 +802,7 @@ def product_article(p, lang):
           <div class="product-head">
             <span class="ic-chip">{icon(p['icon'])}</span>
             <h2>{p['name']}</h2>
+            {ai_pill(p)}
             {badge(p['status'], lang)}
           </div>
           <p class="product-tag">{c['tag']}</p>
@@ -761,6 +821,7 @@ def home_card(p, lang):
             <div class="card-head">
               <span class="ic-chip">{icon(p['icon'])}</span>
               <h3>{p['name']}</h3>
+              {ai_pill(p)}
               {badge(p['status'], lang)}
             </div>
             <p class="card-tag">{c['tag']}</p>
