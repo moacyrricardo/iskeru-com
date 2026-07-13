@@ -59,12 +59,14 @@ NAV = {
 }
 
 BADGE = {"live": {"en": "Live", "pt": "No ar"},
-         "soon": {"en": "Coming soon", "pt": "Em breve"}}
+         "soon": {"en": "Coming soon", "pt": "Em breve"},
+         "oss":  {"en": "Open source", "pt": "Código aberto"}}
 
-CATEGORIES = ["finance", "automation", "construction", "events", "buildings"]
+CATEGORIES = ["finance", "automation", "infra", "construction", "events", "buildings"]
 CAT_NAME = {
     "finance":      {"en": "Finance", "pt": "Finanças"},
     "automation":   {"en": "Automation", "pt": "Automação"},
+    "infra":        {"en": "Infrastructure", "pt": "Infraestrutura"},
     "construction": {"en": "Construction & renovation", "pt": "Obras & reformas"},
     "events":       {"en": "Events", "pt": "Eventos"},
     "buildings":    {"en": "Buildings & condos", "pt": "Condomínios"},
@@ -74,6 +76,8 @@ CAT_TAG = {
                      "pt": "Organização, automação e finanças pessoais"},
     "automation":   {"en": "Self-healing automation, driven by AI",
                      "pt": "Automação autorregenerativa, movida a IA"},
+    "infra":        {"en": "Agent-operable tooling for your machines",
+                     "pt": "Ferramentas para suas máquinas, operáveis por agentes de IA"},
     "construction": {"en": "Track your renovation, end to end",
                      "pt": "Acompanhe sua obra, do começo ao fim"},
     "events":       {"en": "Invitations & confirmation of attendance",
@@ -236,6 +240,31 @@ PRODUCTS = [
             "cta": "Tenho interesse",
         },
     },
+    {
+        "slug": "compute-admin", "cat": "infra", "status": "oss", "ai": True,
+        "name": "compute" + NBHY + "admin", "icon": "cpu", "oss": True,
+        "cta_href": "https://github.com/moacyrricardo/compute-admin", "cta_icon": "github",
+        "en": {
+            "tag": "Agent-operable fleet management over MCP",
+            "short": "Let an AI agent monitor and run ops on your SSH machines — every action gated by a human approval.",
+            "desc": "An open-source MCP server (with a thin web UI) for managing a fleet of SSH-reachable machines through pre-approved recipes. An AI agent — or you — can register machines, auto-discover the apps and services running on them, monitor host and per-app health, and run approved operations (reload nginx, restart a container, run a deploy script) with output streamed live. The catch that makes it safe to hand to an agent: execution is gated by a UI-only human approval — anything can be registered over MCP, but only a person clicking approve turns an action into something MCP can run.",
+            "features": ["Register & auto-discover SSH machines, recipes and apps", "Human-approved actions — the safety gate",
+                         "Fleet monitoring: host vitals + per-app health, ops inline", "Live-streamed output with a full audit trail",
+                         "Open source — connect any MCP agent"],
+            "note": "Open source and working — self-host it and connect your MCP agent.",
+            "cta": "View on GitHub",
+        },
+        "pt": {
+            "tag": "Gestão de frota operável por agentes, via MCP",
+            "short": "Deixe um agente de IA monitorar e executar operações em máquinas SSH — cada ação com aprovação humana.",
+            "desc": "Um servidor MCP de código aberto (com uma UI web enxuta) para gerenciar uma frota de máquinas acessíveis por SSH através de receitas pré-aprovadas. Um agente de IA — ou você — pode cadastrar máquinas, descobrir automaticamente os apps e serviços que rodam nelas, monitorar a saúde do host e de cada app, e executar operações aprovadas (recarregar o nginx, reiniciar um contêiner, rodar um script de deploy) com a saída transmitida ao vivo. O detalhe que torna seguro entregar a um agente: a execução é liberada por uma aprovação humana feita só na UI — qualquer coisa pode ser registrada via MCP, mas só uma pessoa clicando em aprovar transforma uma ação em algo que o MCP pode executar.",
+            "features": ["Cadastro e descoberta automática de máquinas, receitas e apps", "Ações aprovadas por humanos — o portão de segurança",
+                         "Monitoramento da frota: vitais do host + saúde por app, ops inline", "Saída ao vivo com trilha de auditoria completa",
+                         "Código aberto — conecte qualquer agente MCP"],
+            "note": "Código aberto e funcionando — rode você mesmo e conecte seu agente MCP.",
+            "cta": "Ver no GitHub",
+        },
+    },
 ]
 
 # Development capabilities (the "what I work with" grid on the profile)
@@ -298,6 +327,10 @@ TIMELINE = [
 
 # Selected public GitHub projects (curated; ordered by most recently updated)
 GITHUB_PROJECTS = [
+    {"name": "compute-admin", "icon": "cpu", "lang": "Java",
+     "url": "https://github.com/moacyrricardo/compute-admin",
+     "en": "Lightweight fleet management over MCP — let an AI agent monitor and run ops on your SSH machines, safely gated by human approval.",
+     "pt": "Gestão leve de frota via MCP — deixe um agente de IA monitorar e executar operações em máquinas SSH, com aprovação humana."},
     {"name": "docusign-cli", "icon": "file-text", "lang": "Java",
      "url": "https://github.com/moacyrricardo/docusign-cli",
      "en": "Command-line client for DocuSign, in Java.",
@@ -343,7 +376,7 @@ T = {
         "contact_text": "Want to talk, ask a question or propose a partnership? Email ",
         # products
         "products_page_title": "Products — iskeru",
-        "products_page_desc": "All iskeru products by area: Finance, AI Automation, Construction, Events and Buildings — boletim, hive, obralog, cevem and more.",
+        "products_page_desc": "All iskeru products by area: Finance, AI Automation, Infrastructure, Construction, Events, Buildings — boletim, compute-admin, cevem and more.",
         "products_eyebrow": "Products",
         "products_h1": "Focused tools, organized by area.",
         "products_lede": "iskeru builds independent products — some live, some on the way. Browse them by area below.",
@@ -452,7 +485,7 @@ T = {
         "contact_title": "Contato",
         "contact_text": "Quer falar com a gente, tirar uma dúvida ou propor uma parceria? Escreva para ",
         "products_page_title": "Produtos — iskeru",
-        "products_page_desc": "Todos os produtos da iskeru por área: Finanças, Automação com IA, Obras, Eventos e Condomínios — boletim, hive, obralog, cevem e mais.",
+        "products_page_desc": "Produtos da iskeru por área: Finanças, Automação com IA, Infraestrutura, Obras, Eventos e Condomínios — boletim, compute-admin, cevem e mais.",
         "products_eyebrow": "Produtos",
         "products_h1": "Ferramentas focadas, organizadas por área.",
         "products_lede": "A iskeru constrói produtos independentes — alguns já no ar, outros a caminho. Conheça-os por área abaixo.",
@@ -544,8 +577,8 @@ T = {
 # Icons (inline SVG, Lucide-style line icons + brand fills; MIT-licensed art)
 # ----------------------------------------------------------------------------
 
-CAT_ICON = {"finance": "banknote", "automation": "plug", "construction": "building",
-            "events": "calendar", "buildings": "building"}
+CAT_ICON = {"finance": "banknote", "automation": "plug", "infra": "shield",
+            "construction": "building", "events": "calendar", "buildings": "building"}
 HELP_ICONS = ["users", "compass", "code"]
 
 ICONS = {
@@ -776,7 +809,7 @@ def page(lang, key, title, desc, body, ld=""):
 
 
 def badge(status, lang):
-    cls = "badge-live" if status == "live" else "badge-soon"
+    cls = {"live": "badge-live", "soon": "badge-soon", "oss": "badge-oss"}[status]
     return f'<span class="badge {cls}">{BADGE[status][lang]}</span>'
 
 
@@ -786,18 +819,18 @@ def ai_pill(p):
 
 def product_article(p, lang):
     c = p[lang]
-    soon = p["status"] == "soon"
-    cls = "product product-soon" if soon else "product"
+    hosted = p["status"] == "live"
+    cls = "product product-soon" if p["status"] == "soon" else "product"
     features = "\n".join(
         f'            <li>{icon("check", "feat-ic")}<span>{f}</span></li>' for f in c["features"])
-    if soon:
+    if hosted:
+        tail = (f'          <a class="btn btn-primary" href="{p["link"]}">'
+                f'<span>{c["cta"]}</span>{icon("arrow-right")}</a>\n')
+    else:
         tail = f'          <p class="product-status">{c["note"]}</p>\n'
         if "cta" in c and "cta_href" in p:
             tail += (f'          <a class="btn btn-ghost" href="{p["cta_href"]}">'
-                     f'{icon("mail")}<span>{c["cta"]}</span></a>\n')
-    else:
-        tail = (f'          <a class="btn btn-primary" href="{p["link"]}">'
-                f'<span>{c["cta"]}</span>{icon("arrow-right")}</a>\n')
+                     f'{icon(p.get("cta_icon", "mail"))}<span>{c["cta"]}</span></a>\n')
     return f"""        <article id="{p['slug']}" class="{cls}">
           <div class="product-head">
             <span class="ic-chip">{icon(p['icon'])}</span>
