@@ -262,6 +262,7 @@ h1, h2, h3 { font-family: var(--font-display); }
 }
 .badge-live { background: rgba(52, 211, 153, 0.14); color: var(--live); }
 .badge-soon { background: rgba(159, 176, 196, 0.16); color: var(--soon); }
+.badge-oss { background: var(--accent-soft); color: var(--accent); }
 .badge-count { background: var(--accent-soft); color: var(--accent); }
 .badge-count::before { display: none; }
 .badge-ai { background: var(--accent-grad); color: var(--accent-ink); }
