@@ -2,8 +2,8 @@
 
 > Status: **done** — branch `moacyrricardo/spec-001-bilingual-404-page`.
 > No Linear ticket for this work. Shipped via PR #1, merged to `main` 2026-06-22.
-> **Operational follow-up outstanding:** the nginx `error_page` directive on the
-> origin box is not yet applied — see Verification status.
+> **Operational follow-up completed 2026-07-14:** the origin nginx `error_page` +
+> `internal` wiring is applied and verified live — see Verification status.
 
 ## Context
 
@@ -119,19 +119,20 @@ The **build/repo side is done and deployed:**
   styled, with both `lang="en"` and `lang="pt-BR"` sections and absolute asset
   links (`/assets/styles.css`) — confirmed 2026-06-25.
 
-**Outstanding operational step (origin box, not the repo):** the nginx
-`error_page` directive is **not yet applied**, so an unknown URL currently falls
-back to nginx's bare default page rather than the custom one. Verified
-2026-06-25: `curl -I https://iskeru.com/<bogus>` returns `404` but with the
-default `nginx/1.24.0` body, and `/404.html` is still directly fetchable with
-`200` (which the `internal` clause is meant to prevent). To finish, add to the
-server block on the origin and reload:
+**Operational step (origin box, not the repo) — completed 2026-07-14.** The nginx
+server block for `iskeru.com` now carries the wiring the spec always called out
+(documented in `README.md` → "Custom 404"):
 
 ```nginx
 error_page 404 /404.html;
 location = /404.html { internal; }
 ```
 
-This is the repo-external step the spec always called out (documented in
-`README.md` → "Custom 404"); the spec is marked `done` on the code deliverable
-with this wiring as the remaining ops task.
+Verified live 2026-07-14: `curl https://iskeru.com/<bogus>` returns `404` with the
+**custom** styled body ("Page not found" / iskeru markup, no longer the default
+`nginx/1.24.0` page), and `GET /404.html` now returns `404` rather than being
+directly fetchable with `200` — the `internal` clause is in effect. The spec is
+fully delivered (code **and** ops).
+
+> Historical: as of 2026-06-25 this step was still outstanding — the page was live
+> at `/404.html` (200) but nginx served its default body on unknown URLs.
