@@ -265,6 +265,31 @@ PRODUCTS = [
             "cta": "Ver no GitHub",
         },
     },
+    {
+        "slug": "moacyr-skills", "cat": "infra", "status": "oss", "ai": True,
+        "name": "moacyr" + NBHY + "skills", "icon": "package", "oss": True,
+        "cta_href": "https://moacyrricardo.github.io/skills", "cta_icon": "arrow-right",
+        "en": {
+            "tag": "A personal Claude Code plugin marketplace",
+            "short": "The plugins I use every day to carry work from a rough idea to an open PR — installable in one command.",
+            "desc": "An open-source marketplace of Claude Code plugins — the custom skills, agents and commands I use on my own projects, day to day. The core is spec-workflow: a numbered specs/ catalog where every decision lives as a file that moves todo → doing → done, with commands that carry it from a rough idea through implementation and evaluation to an open PR, plus an autopilot agent that drains the backlog unattended. Around it sit the pieces that make that loop trustworthy: live-verify drives a real browser to prove a feature works against the running app, rich-html turns scattered sources into self-contained interactive reports and decision surfaces, and prototype builds clickable mocks in the product's own look. Register the marketplace once and each plugin is a single command away.",
+            "features": ["spec-workflow — a specs/ catalog from idea to open PR", "autopilot — an agent that drains the backlog unattended",
+                         "live-verify — browser-driven proof a feature really works", "rich-html — interactive reports and decision surfaces",
+                         "prototype — clickable mocks in the product's own look"],
+            "note": "Open source (MIT) — add the marketplace and install what you need.",
+            "cta": "Explore the plugins",
+        },
+        "pt": {
+            "tag": "Um marketplace pessoal de plugins do Claude Code",
+            "short": "Os plugins que uso todo dia para levar um trabalho de uma ideia solta até um PR aberto — instaláveis com um comando.",
+            "desc": "Um marketplace de código aberto de plugins do Claude Code — as skills, agentes e comandos que uso nos meus próprios projetos, no dia a dia. O núcleo é o spec-workflow: um catálogo numerado em specs/ onde cada decisão vive como um arquivo que caminha de todo → doing → done, com comandos que a conduzem da ideia solta à implementação, à avaliação e a um PR aberto, além de um agente autopilot que esvazia a fila sem supervisão. Em volta dele ficam as peças que tornam esse ciclo confiável: o live-verify dirige um navegador real para provar que um recurso funciona no app rodando, o rich-html transforma fontes espalhadas em relatórios interativos autocontidos e superfícies de decisão, e o prototype cria mocks clicáveis com a cara do próprio produto. Registre o marketplace uma vez e cada plugin fica a um comando de distância.",
+            "features": ["spec-workflow — um catálogo specs/ da ideia ao PR aberto", "autopilot — um agente que esvazia a fila sem supervisão",
+                         "live-verify — prova por navegador de que o recurso funciona", "rich-html — relatórios interativos e superfícies de decisão",
+                         "prototype — mocks clicáveis com a cara do produto"],
+            "note": "Código aberto (MIT) — adicione o marketplace e instale o que precisar.",
+            "cta": "Conhecer os plugins",
+        },
+    },
 ]
 
 # Development capabilities (the "what I work with" grid on the profile)
@@ -327,6 +352,10 @@ TIMELINE = [
 
 # Selected public GitHub projects (curated; ordered by most recently updated)
 GITHUB_PROJECTS = [
+    {"name": "skills", "icon": "package", "lang": "Claude Code",
+     "url": "https://github.com/moacyrricardo/skills",
+     "en": "My personal Claude Code plugin marketplace — spec-driven development, live verification, interactive reports and clickable mocks.",
+     "pt": "Meu marketplace pessoal de plugins do Claude Code — desenvolvimento guiado por specs, verificação ao vivo, relatórios interativos e mocks clicáveis."},
     {"name": "compute-admin", "icon": "cpu", "lang": "Java",
      "url": "https://github.com/moacyrricardo/compute-admin",
      "en": "Lightweight fleet management over MCP — let an AI agent monitor and run ops on your SSH machines, safely gated by human approval.",
