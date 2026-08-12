@@ -6,6 +6,9 @@ root, Portuguese (pt-BR) under `/pt/`.
 Products (grouped by area on the products page):
 
 - **Finance** — [boletim](https://boletim.iskeru.com), [minhabufunfa](https://minhabufunfa.iskeru.com), lineu-ai (soon)
+- **Automation** — hive (soon)
+- **Infrastructure** — [compute-admin](https://github.com/moacyrricardo/compute-admin) (open source), [moacyr-skills](https://moacyrricardo.github.io/skills) (open source)
+- **Construction & renovation** — obralog (soon)
 - **Events** — [cevem](https://cevem.iskeru.com)
 - **Buildings** — pacdoorman (soon)
 
