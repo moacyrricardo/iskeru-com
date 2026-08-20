@@ -48,6 +48,8 @@ ROUTES = {
     # Intent-matched service pages (spec 002): each ranks for one commercial query.
     "fractional_cto": {"en": "/fractional-cto/",    "pt": "/pt/cto-fracional/"},
     "custom_dev":     {"en": "/custom-development/", "pt": "/pt/desenvolvimento/"},
+    # Minimal privacy / cookie policy backing the consent banner (spec 004).
+    "privacy":        {"en": "/privacy/",           "pt": "/pt/privacidade/"},
     # The 404 is a single bilingual file served at the web root via nginx
     # error_page. There is no /pt/ variant, so both languages point at the same
     # absolute path — it is reachable at any depth, never via nav or sitemap.
@@ -57,10 +59,12 @@ ROUTES = {
 NAV = {
     "en": {"products": "Products", "company": "Company",
            "consulting": "Profile", "contact": "Contact",
-           "fractional_cto": "Fractional CTO", "custom_dev": "Custom development"},
+           "fractional_cto": "Fractional CTO", "custom_dev": "Custom development",
+           "privacy": "Privacy"},
     "pt": {"products": "Produtos", "company": "Empresa",
            "consulting": "Perfil", "contact": "Contato",
-           "fractional_cto": "CTO Fracional", "custom_dev": "Desenvolvimento"},
+           "fractional_cto": "CTO Fracional", "custom_dev": "Desenvolvimento",
+           "privacy": "Privacidade"},
 }
 
 BADGE = {"live": {"en": "Live", "pt": "No ar"},
@@ -487,6 +491,19 @@ T = {
             {"q": "What does a custom development project cost?",
              "a": "It depends on scope. Small, well-defined projects are quoted as a fixed phase; larger or evolving builds run on a time basis with milestones. After the discovery call you get a written scope and estimate — email contato@iskeru.com to start."},
         ],
+        # privacy / cookie policy
+        "privacy_title": "Privacy & Cookie Policy — iskeru",
+        "privacy_desc": "How iskeru.com uses Google Analytics 4 with Consent Mode, the cookies it sets, and how to withdraw your consent.",
+        "privacy_eyebrow": "Privacy",
+        "privacy_h1": "Privacy & cookie policy",
+        "privacy_lede": "This page explains how iskeru.com measures traffic, the cookies involved, and how you stay in control of your consent.",
+        "privacy_analytics_title": "Analytics",
+        "privacy_analytics_p": "We use Google Analytics 4 (GA4) to understand how visitors use the site — page views, sessions and basic on-site behaviour — so we can improve it. Analytics runs only after you accept, via Google Consent Mode v2: until then no analytics cookies are set and no analytics data is sent.",
+        "privacy_cookies_title": "Cookies we set",
+        "privacy_cookies_p": "When you accept, GA4 sets first-party cookies (<code>_ga</code> and <code>_ga_*</code>) used to distinguish visitors and sessions. We do not use advertising or remarketing cookies — ad signals stay disabled. Your accept/decline choice is stored locally in your browser (<code>iskeru_consent</code>) so we don't ask again on every page.",
+        "privacy_withdraw_title": "Withdrawing consent",
+        "privacy_withdraw_p": "You can withdraw consent at any time by clearing this site's cookies and local storage in your browser (Settings → Privacy, or DevTools → Application → Storage). The consent banner will then reappear and analytics stays disabled until you accept again.",
+        "privacy_contact_pre": "Questions about privacy? Email ",
         # 404
         "nf_title": "Page not found — iskeru",
         "nf_desc": "The page you were looking for doesn't exist. Head back to the iskeru home page or browse the products.",
@@ -595,6 +612,19 @@ T = {
             {"q": "Quanto custa um projeto de desenvolvimento sob medida?",
              "a": "Depende do escopo. Projetos pequenos e bem definidos são orçados como uma fase de valor fechado; builds maiores ou em evolução rodam por tempo com marcos. Após a conversa de descoberta você recebe um escopo e estimativa por escrito — escreva para contato@iskeru.com para começar."},
         ],
+        # privacy / cookie policy
+        "privacy_title": "Política de Privacidade e Cookies — iskeru",
+        "privacy_desc": "Como o iskeru.com usa o Google Analytics 4 com Consent Mode, os cookies que utiliza e como retirar o seu consentimento.",
+        "privacy_eyebrow": "Privacidade",
+        "privacy_h1": "Política de privacidade e cookies",
+        "privacy_lede": "Esta página explica como o iskeru.com mede o tráfego, os cookies envolvidos e como você mantém o controle do seu consentimento.",
+        "privacy_analytics_title": "Analytics",
+        "privacy_analytics_p": "Usamos o Google Analytics 4 (GA4) para entender como as pessoas usam o site — visualizações de página, sessões e comportamento básico — para poder melhorá-lo. O analytics só roda depois que você aceita, via Google Consent Mode v2: até lá nenhum cookie de analytics é criado e nenhum dado é enviado.",
+        "privacy_cookies_title": "Cookies que utilizamos",
+        "privacy_cookies_p": "Ao aceitar, o GA4 cria cookies primários (<code>_ga</code> e <code>_ga_*</code>) usados para distinguir visitantes e sessões. Não usamos cookies de publicidade ou remarketing — os sinais de anúncios permanecem desativados. Sua escolha de aceitar/recusar fica guardada localmente no navegador (<code>iskeru_consent</code>), para não perguntarmos de novo a cada página.",
+        "privacy_withdraw_title": "Retirar o consentimento",
+        "privacy_withdraw_p": "Você pode retirar o consentimento a qualquer momento limpando os cookies e o armazenamento local deste site no seu navegador (Configurações → Privacidade, ou DevTools → Application → Storage). O banner de consentimento reaparecerá e o analytics permanece desativado até você aceitar novamente.",
+        "privacy_contact_pre": "Dúvidas sobre privacidade? Escreva para ",
         # 404
         "nf_title": "Página não encontrada — iskeru",
         "nf_desc": "A página que você procurava não existe. Volte para a página inicial da iskeru ou conheça os produtos.",
@@ -857,6 +887,7 @@ def footer(lang):
         <a href="{ROUTES['custom_dev'][lang]}">{nav['custom_dev']}</a>
         <a href="{ROUTES['about'][lang]}">{nav['consulting']}</a>
         <a href="{home}#contact">{nav['contact']}</a>
+        <a href="{ROUTES['privacy'][lang]}">{nav['privacy']}</a>
       </nav>
       <p class="footer-copy">&copy; <span id="year">2026</span> iskeru</p>
     </div>
@@ -1289,6 +1320,39 @@ def render_custom_dev(lang):
     return page(lang, "custom_dev", t["cdev_title"], t["cdev_desc"], body, ld=ld)
 
 
+def render_privacy(lang):
+    """Minimal, factual bilingual privacy/cookie policy backing the consent
+    banner (spec 004). Kept simple — a fuller legal review can follow separately."""
+    t = T[lang]
+    body = f"""  <main id="main">
+    <section class="hero">
+      <div class="container narrow">
+        <p class="eyebrow">{t['privacy_eyebrow']}</p>
+        <h1>{t['privacy_h1']}</h1>
+        <p class="lede">{t['privacy_lede']}</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container narrow">
+        <h2 class="section-title">{t['privacy_analytics_title']}</h2>
+        <p>{t['privacy_analytics_p']}</p>
+
+        <h2 class="section-title" style="margin-top:48px;">{t['privacy_cookies_title']}</h2>
+        <p>{t['privacy_cookies_p']}</p>
+
+        <h2 class="section-title" style="margin-top:48px;">{t['privacy_withdraw_title']}</h2>
+        <p>{t['privacy_withdraw_p']}</p>
+
+        <p style="margin-top:32px;">{t['privacy_contact_pre']}<a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
+      </div>
+    </section>
+  </main>
+"""
+    return page(lang, "privacy", t["privacy_title"], t["privacy_desc"], body,
+                ld=ld_script([person_ld(lang)]))
+
+
 def notfound_block(lang):
     """One language's slice of the bilingual 404 body. All links are absolute
     (ROUTES values are already absolute) since a 404 is served at any depth."""
@@ -1325,7 +1389,8 @@ def render_notfound():
 # ----------------------------------------------------------------------------
 
 RENDERERS = {"home": render_home, "products": render_products, "about": render_about,
-             "fractional_cto": render_fractional_cto, "custom_dev": render_custom_dev}
+             "fractional_cto": render_fractional_cto, "custom_dev": render_custom_dev,
+             "privacy": render_privacy}
 
 
 def out_path(route):
