@@ -392,6 +392,12 @@ T = {
     "en": {
         "footer_note": "Digital products that simplify everyday life.",
         "skip": "Skip to content",
+        # cookie-consent banner (spec 004)
+        "consent_title": "We value your privacy",
+        "consent_body": "We use analytics cookies to understand how the site is used and improve it. They're only set if you accept.",
+        "consent_accept": "Accept",
+        "consent_decline": "Decline",
+        "consent_privacy": "Privacy policy",
         # home
         "home_title": "iskeru — digital products that simplify everyday life",
         "home_desc": "iskeru builds focused digital products across finance, AI automation, construction and events — boletim, hive, obralog, cevem and more.",
@@ -516,6 +522,12 @@ T = {
     "pt": {
         "footer_note": "Produtos digitais que simplificam o dia a dia.",
         "skip": "Pular para o conteúdo",
+        # cookie-consent banner (spec 004)
+        "consent_title": "Sua privacidade importa",
+        "consent_body": "Usamos cookies de analytics para entender como o site é usado e melhorá-lo. Eles só são criados se você aceitar.",
+        "consent_accept": "Aceitar",
+        "consent_decline": "Recusar",
+        "consent_privacy": "Política de privacidade",
         "home_title": "iskeru — produtos digitais que simplificam o dia a dia",
         "home_desc": "A iskeru cria produtos digitais focados em finanças, automação com IA, obras e eventos — boletim, hive, obralog, cevem e mais.",
         "hero_h1": "Produtos digitais que simplificam o dia a dia.",
@@ -804,6 +816,57 @@ def ga_head():
 """
 
 
+def consent_banner(lang):
+    """Minimal, self-contained bilingual cookie-consent banner (spec 004,
+    Decision #4). Returns "" when GA_MEASUREMENT_ID is empty (no analytics, no
+    banner). Accept flips analytics_storage to 'granted' via Consent Mode
+    update and persists the choice; Decline persists 'denied'. The choice is
+    stored in localStorage ('iskeru_consent'); once made, the banner never
+    shows again (and a stored 'granted' is replayed in ga_head()). Zero
+    dependency — inline <style>/<script>, no CMP library."""
+    if not GA_MEASUREMENT_ID:
+        return ""
+    t = T[lang]
+    privacy_url = ROUTES["privacy"][lang]
+    return f"""  <div id="consent-banner" class="consent-banner" role="dialog" aria-live="polite" aria-label="{t['consent_title']}" hidden>
+    <div class="consent-inner">
+      <p class="consent-text"><strong>{t['consent_title']}.</strong> {t['consent_body']} <a href="{privacy_url}">{t['consent_privacy']}</a></p>
+      <div class="consent-actions">
+        <button type="button" id="consent-accept" class="btn btn-primary">{t['consent_accept']}</button>
+        <button type="button" id="consent-decline" class="btn btn-ghost">{t['consent_decline']}</button>
+      </div>
+    </div>
+  </div>
+  <style>
+    .consent-banner{{position:fixed;left:0;right:0;bottom:0;z-index:1000;background:#fff;border-top:1px solid #e5e7eb;box-shadow:0 -4px 24px rgba(0,0,0,.08);}}
+    .consent-banner[hidden]{{display:none;}}
+    .consent-inner{{max-width:1080px;margin:0 auto;padding:16px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;}}
+    .consent-text{{margin:0;font-size:14px;line-height:1.5;max-width:64ch;}}
+    .consent-actions{{display:flex;gap:8px;flex-shrink:0;}}
+  </style>
+  <script>
+    (function () {{
+      var banner = document.getElementById('consent-banner');
+      if (!banner) return;
+      var stored = null;
+      try {{ stored = localStorage.getItem('iskeru_consent'); }} catch (e) {{}}
+      if (!stored) {{ banner.hidden = false; }}
+      function choose(v) {{
+        try {{ localStorage.setItem('iskeru_consent', v); }} catch (e) {{}}
+        if (v === 'granted' && typeof gtag === 'function') {{
+          gtag('consent', 'update', {{ 'analytics_storage': 'granted' }});
+        }}
+        banner.hidden = true;
+      }}
+      var a = document.getElementById('consent-accept');
+      var d = document.getElementById('consent-decline');
+      if (a) a.addEventListener('click', function () {{ choose('granted'); }});
+      if (d) d.addEventListener('click', function () {{ choose('denied'); }});
+    }})();
+  </script>
+"""
+
+
 def head(lang, key, title, desc, ld=""):
     canonical = SITE + ROUTES[key][lang]
     en_url = SITE + ROUTES[key]["en"]
@@ -905,7 +968,7 @@ def footer(lang):
       }});
     }}
   </script>
-</body>
+{consent_banner(lang)}</body>
 </html>
 """
 
