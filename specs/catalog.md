@@ -18,7 +18,7 @@ and renames it). Before/after evidence lives under [`evidence/`](./evidence).
 | 001 | Custom bilingual 404 page | ✅ done | PR #1 → `main` 2026-06-22 (finish PR #6). Origin nginx `error_page`/`internal` wiring **applied & verified live 2026-07-14** (bogus URL serves the custom page; `/404.html` no longer directly fetchable). |
 | 002 | SEO positioning: intent-matched service pages | ✅ done | PR #2 → `main` 2026-06-23 (merge `7851d37`, finish PR #3). Fractional-CTO + custom-development pages, JSON-LD structured data, `og:image`. |
 | 003 | Landing performance: kill render-blocking CSS & Google Fonts (LCP) | ⚪ todo | Self-host Inter/Space Grotesk fonts + inline CSS to clear PageSpeed render-blocking (~1,970 ms) and the 3-hop font critical chain. Also Cloudflare Email-Obfuscation removal + `/assets/*` cache TTL. No branch yet. |
-| 004 | Google Analytics (GA4) with Consent Mode v2 | ⚪ todo | Add `gtag.js` in `head()` behind Consent Mode v2 (analytics denied by default) + a minimal bilingual cookie banner; host-gated to `iskeru.com`. Adds a minimal privacy page (`/privacy/`, `/pt/privacidade/`). Owner supplies the `G-…` Measurement ID. No branch yet. |
+| 004 | Google Analytics (GA4) with Consent Mode v2 | 🟡 doing | PR #10 on `moacyrricardo/spec-004-google-analytics-consent`. `gtag.js` in `head()` behind Consent Mode v2 (analytics denied by default) + a minimal bilingual cookie banner; host-gated to `iskeru.com`. Adds a minimal privacy page (`/privacy/`, `/pt/privacidade/`). Real Measurement ID `G-H4S91E1LWD` committed. GTM preconnect deferred until 003 merges. |
 
 ## Notes
 

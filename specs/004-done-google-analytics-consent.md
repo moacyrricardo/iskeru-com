@@ -1,6 +1,6 @@
 # 004 — Google Analytics (GA4) with Consent Mode v2
 
-> Status: **doing**
+> Status: **done**
 > Branch: `moacyrricardo/spec-004-google-analytics-consent` · No Linear ticket.
 
 ## Context
@@ -137,3 +137,36 @@ and a minimal bilingual cookie-consent banner. Concretely:
   (data can take up to ~30 min for standard reports). Confirm a `localhost` build sends nothing
   (host gate). Save a before/after (Realtime screenshot + a cookie-timeline note) under
   `specs/evidence/`.
+
+## Implementation Notes
+
+Built on `moacyrricardo/spec-004-google-analytics-consent`, PR #10. The build followed the
+Decision closely; notable specifics and where it differed from the spec's suggestions:
+
+- **`GA_MEASUREMENT_ID`** is the real web-stream ID `G-H4S91E1LWD`, placed beside `SITE`/`EMAIL`.
+  Empty string ⇒ no analytics markup and no banner (both `ga_head()` and `consent_banner()`
+  return `""`).
+- **`ga_head()` helper** injects the block at the very top of `<head>` (before `<meta charset>`),
+  in strict order: Consent Mode v2 `consent 'default'` (all four signals denied, `wait_for_update:
+  500`) → `gtag/js` async tag → `gtag('js', …)` + host-gated `config()`. The ID is filled in both
+  the tag `src` and the `config()` call. A stored `granted` choice is replayed **in `ga_head()`**
+  (before `config()` runs) so returning visitors keep analytics on — the spec mentioned replay only
+  in the banner; doing it in head as well is more correct.
+- **`consent_banner(lang)` helper**, emitted from `footer()` (before `</body>`) on every page —
+  rather than from `page()` — so it also appears on the 404. Self-contained inline `<style>` +
+  `<script>`; the banner is `hidden` by default and revealed by JS only when no stored choice
+  exists (fail-safe: JS off ⇒ no banner, analytics stays denied). Strings live in `T[lang]`
+  (`consent_title/body/accept/decline/privacy`).
+- **Privacy page** added as route `privacy` (`/privacy/` · `/pt/privacidade/`) with
+  `render_privacy(lang)` using the site's prose/hero pattern, wired into `RENDERERS`, the sitemap
+  (automatic via the `ROUTES` loop) and a footer link (plus a `NAV['privacy']` label). Content is a
+  minimal factual disclosure (analytics, cookies, withdrawal), bilingual.
+- **GTM preconnect not added.** The spec makes it conditional on spec 003 having merged (003 removes
+  the Google Fonts preconnect chain). 003 is still `todo` and the fonts chain is still in `head()`,
+  so the condition is unmet — deferred to when 003 lands.
+- **Tests:** new `tests/test_analytics_consent.py` (stdlib `unittest`) — ID on every page, consent
+  default precedes gtag/js, `analytics_storage` denied by default, host-gated config, bilingual
+  banner, privacy route in both languages + sitemap, and the empty-ID clean-build invariant. Full
+  suite: 19 tests, all passing.
+- **Out-of-repo / not done here:** creating the GA4 property/stream, Enhanced Measurement, data
+  retention, internal-traffic IP filter, and post-deploy Realtime verification remain owner tasks.
