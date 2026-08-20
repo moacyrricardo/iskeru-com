@@ -16,6 +16,11 @@ import shutil
 
 SITE = "https://iskeru.com"
 EMAIL = "contato@iskeru.com"
+# GA4 web-stream Measurement ID for the iskeru.com property. This is a public,
+# client-side value (it appears in every page's source by design), so committing
+# it is correct — no secret handling. Leave empty ("") to emit no analytics
+# markup at all (clean build with no tag, no banner).
+GA_MEASUREMENT_ID = "G-H4S91E1LWD"
 LINKEDIN = "https://www.linkedin.com/in/moacyrricardo"
 GITHUB = "https://github.com/moacyrricardo"
 OG_IMAGE = "/assets/og-image.png"  # 1200x630 social card (asset produced separately)
@@ -43,6 +48,8 @@ ROUTES = {
     # Intent-matched service pages (spec 002): each ranks for one commercial query.
     "fractional_cto": {"en": "/fractional-cto/",    "pt": "/pt/cto-fracional/"},
     "custom_dev":     {"en": "/custom-development/", "pt": "/pt/desenvolvimento/"},
+    # Minimal privacy / cookie policy backing the consent banner (spec 004).
+    "privacy":        {"en": "/privacy/",           "pt": "/pt/privacidade/"},
     # The 404 is a single bilingual file served at the web root via nginx
     # error_page. There is no /pt/ variant, so both languages point at the same
     # absolute path — it is reachable at any depth, never via nav or sitemap.
@@ -52,10 +59,12 @@ ROUTES = {
 NAV = {
     "en": {"products": "Products", "company": "Company",
            "consulting": "Profile", "contact": "Contact",
-           "fractional_cto": "Fractional CTO", "custom_dev": "Custom development"},
+           "fractional_cto": "Fractional CTO", "custom_dev": "Custom development",
+           "privacy": "Privacy"},
     "pt": {"products": "Produtos", "company": "Empresa",
            "consulting": "Perfil", "contact": "Contato",
-           "fractional_cto": "CTO Fracional", "custom_dev": "Desenvolvimento"},
+           "fractional_cto": "CTO Fracional", "custom_dev": "Desenvolvimento",
+           "privacy": "Privacidade"},
 }
 
 BADGE = {"live": {"en": "Live", "pt": "No ar"},
@@ -383,6 +392,12 @@ T = {
     "en": {
         "footer_note": "Digital products that simplify everyday life.",
         "skip": "Skip to content",
+        # cookie-consent banner (spec 004)
+        "consent_title": "We value your privacy",
+        "consent_body": "We use analytics cookies to understand how the site is used and improve it. They're only set if you accept.",
+        "consent_accept": "Accept",
+        "consent_decline": "Decline",
+        "consent_privacy": "Privacy policy",
         # home
         "home_title": "iskeru — digital products that simplify everyday life",
         "home_desc": "iskeru builds focused digital products across finance, AI automation, construction and events — boletim, hive, obralog, cevem and more.",
@@ -482,6 +497,19 @@ T = {
             {"q": "What does a custom development project cost?",
              "a": "It depends on scope. Small, well-defined projects are quoted as a fixed phase; larger or evolving builds run on a time basis with milestones. After the discovery call you get a written scope and estimate — email contato@iskeru.com to start."},
         ],
+        # privacy / cookie policy
+        "privacy_title": "Privacy & Cookie Policy — iskeru",
+        "privacy_desc": "How iskeru.com uses Google Analytics 4 with Consent Mode, the cookies it sets, and how to withdraw your consent.",
+        "privacy_eyebrow": "Privacy",
+        "privacy_h1": "Privacy & cookie policy",
+        "privacy_lede": "This page explains how iskeru.com measures traffic, the cookies involved, and how you stay in control of your consent.",
+        "privacy_analytics_title": "Analytics",
+        "privacy_analytics_p": "We use Google Analytics 4 (GA4) to understand how visitors use the site — page views, sessions and basic on-site behaviour — so we can improve it. Analytics runs only after you accept, via Google Consent Mode v2: until then no analytics cookies are set and no analytics data is sent.",
+        "privacy_cookies_title": "Cookies we set",
+        "privacy_cookies_p": "When you accept, GA4 sets first-party cookies (<code>_ga</code> and <code>_ga_*</code>) used to distinguish visitors and sessions. We do not use advertising or remarketing cookies — ad signals stay disabled. Your accept/decline choice is stored locally in your browser (<code>iskeru_consent</code>) so we don't ask again on every page.",
+        "privacy_withdraw_title": "Withdrawing consent",
+        "privacy_withdraw_p": "You can withdraw consent at any time by clearing this site's cookies and local storage in your browser (Settings → Privacy, or DevTools → Application → Storage). The consent banner will then reappear and analytics stays disabled until you accept again.",
+        "privacy_contact_pre": "Questions about privacy? Email ",
         # 404
         "nf_title": "Page not found — iskeru",
         "nf_desc": "The page you were looking for doesn't exist. Head back to the iskeru home page or browse the products.",
@@ -494,6 +522,12 @@ T = {
     "pt": {
         "footer_note": "Produtos digitais que simplificam o dia a dia.",
         "skip": "Pular para o conteúdo",
+        # cookie-consent banner (spec 004)
+        "consent_title": "Sua privacidade importa",
+        "consent_body": "Usamos cookies de analytics para entender como o site é usado e melhorá-lo. Eles só são criados se você aceitar.",
+        "consent_accept": "Aceitar",
+        "consent_decline": "Recusar",
+        "consent_privacy": "Política de privacidade",
         "home_title": "iskeru — produtos digitais que simplificam o dia a dia",
         "home_desc": "A iskeru cria produtos digitais focados em finanças, automação com IA, obras e eventos — boletim, hive, obralog, cevem e mais.",
         "hero_h1": "Produtos digitais que simplificam o dia a dia.",
@@ -590,6 +624,19 @@ T = {
             {"q": "Quanto custa um projeto de desenvolvimento sob medida?",
              "a": "Depende do escopo. Projetos pequenos e bem definidos são orçados como uma fase de valor fechado; builds maiores ou em evolução rodam por tempo com marcos. Após a conversa de descoberta você recebe um escopo e estimativa por escrito — escreva para contato@iskeru.com para começar."},
         ],
+        # privacy / cookie policy
+        "privacy_title": "Política de Privacidade e Cookies — iskeru",
+        "privacy_desc": "Como o iskeru.com usa o Google Analytics 4 com Consent Mode, os cookies que utiliza e como retirar o seu consentimento.",
+        "privacy_eyebrow": "Privacidade",
+        "privacy_h1": "Política de privacidade e cookies",
+        "privacy_lede": "Esta página explica como o iskeru.com mede o tráfego, os cookies envolvidos e como você mantém o controle do seu consentimento.",
+        "privacy_analytics_title": "Analytics",
+        "privacy_analytics_p": "Usamos o Google Analytics 4 (GA4) para entender como as pessoas usam o site — visualizações de página, sessões e comportamento básico — para poder melhorá-lo. O analytics só roda depois que você aceita, via Google Consent Mode v2: até lá nenhum cookie de analytics é criado e nenhum dado é enviado.",
+        "privacy_cookies_title": "Cookies que utilizamos",
+        "privacy_cookies_p": "Ao aceitar, o GA4 cria cookies primários (<code>_ga</code> e <code>_ga_*</code>) usados para distinguir visitantes e sessões. Não usamos cookies de publicidade ou remarketing — os sinais de anúncios permanecem desativados. Sua escolha de aceitar/recusar fica guardada localmente no navegador (<code>iskeru_consent</code>), para não perguntarmos de novo a cada página.",
+        "privacy_withdraw_title": "Retirar o consentimento",
+        "privacy_withdraw_p": "Você pode retirar o consentimento a qualquer momento limpando os cookies e o armazenamento local deste site no seu navegador (Configurações → Privacidade, ou DevTools → Application → Storage). O banner de consentimento reaparecerá e o analytics permanece desativado até você aceitar novamente.",
+        "privacy_contact_pre": "Dúvidas sobre privacidade? Escreva para ",
         # 404
         "nf_title": "Página não encontrada — iskeru",
         "nf_desc": "A página que você procurava não existe. Volte para a página inicial da iskeru ou conheça os produtos.",
@@ -728,6 +775,98 @@ def ld_script(nodes):
 # Rendering helpers
 # ----------------------------------------------------------------------------
 
+def ga_head():
+    """GA4 gtag.js behind Google Consent Mode v2, injected at the very top of
+    <head>. Returns "" when GA_MEASUREMENT_ID is empty so the build stays clean.
+
+    Order is strict and load-bearing (spec 004, Decision #2/#3):
+      1. Consent Mode defaults — analytics_storage denied — MUST run before the
+         tag loads, or Consent Mode does nothing. A stored 'granted' choice is
+         replayed here so returning visitors keep analytics on before config runs.
+      2. The gtag.js tag, then js()/config() with the config call host-gated to
+         iskeru.com so localhost/preview builds send nothing to GA.
+    """
+    if not GA_MEASUREMENT_ID:
+        return ""
+    gid = GA_MEASUREMENT_ID
+    return f"""  <!-- Google Consent Mode v2 — analytics denied by default (GDPR/ePrivacy/LGPD) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('consent', 'default', {{
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'analytics_storage': 'denied',
+      'wait_for_update': 500
+    }});
+    try {{
+      if (localStorage.getItem('iskeru_consent') === 'granted') {{
+        gtag('consent', 'update', {{ 'analytics_storage': 'granted' }});
+      }}
+    }} catch (e) {{}}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id={gid}"></script>
+  <script>
+    gtag('js', new Date());
+    if (location.hostname === 'iskeru.com') {{
+      gtag('config', '{gid}');
+    }}
+  </script>
+"""
+
+
+def consent_banner(lang):
+    """Minimal, self-contained bilingual cookie-consent banner (spec 004,
+    Decision #4). Returns "" when GA_MEASUREMENT_ID is empty (no analytics, no
+    banner). Accept flips analytics_storage to 'granted' via Consent Mode
+    update and persists the choice; Decline persists 'denied'. The choice is
+    stored in localStorage ('iskeru_consent'); once made, the banner never
+    shows again (and a stored 'granted' is replayed in ga_head()). Zero
+    dependency — inline <style>/<script>, no CMP library."""
+    if not GA_MEASUREMENT_ID:
+        return ""
+    t = T[lang]
+    privacy_url = ROUTES["privacy"][lang]
+    return f"""  <div id="consent-banner" class="consent-banner" role="dialog" aria-live="polite" aria-label="{t['consent_title']}" hidden>
+    <div class="consent-inner">
+      <p class="consent-text"><strong>{t['consent_title']}.</strong> {t['consent_body']} <a href="{privacy_url}">{t['consent_privacy']}</a></p>
+      <div class="consent-actions">
+        <button type="button" id="consent-accept" class="btn btn-primary">{t['consent_accept']}</button>
+        <button type="button" id="consent-decline" class="btn btn-ghost">{t['consent_decline']}</button>
+      </div>
+    </div>
+  </div>
+  <style>
+    .consent-banner{{position:fixed;left:0;right:0;bottom:0;z-index:1000;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -8px 40px -12px rgba(0,0,0,.6);}}
+    .consent-banner[hidden]{{display:none;}}
+    .consent-inner{{max-width:1080px;margin:0 auto;padding:16px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;}}
+    .consent-text{{margin:0;font-size:14px;line-height:1.5;max-width:64ch;color:var(--text);}}
+    .consent-actions{{display:flex;gap:8px;flex-shrink:0;}}
+  </style>
+  <script>
+    (function () {{
+      var banner = document.getElementById('consent-banner');
+      if (!banner) return;
+      var stored = null;
+      try {{ stored = localStorage.getItem('iskeru_consent'); }} catch (e) {{}}
+      if (!stored) {{ banner.hidden = false; }}
+      function choose(v) {{
+        try {{ localStorage.setItem('iskeru_consent', v); }} catch (e) {{}}
+        if (v === 'granted' && typeof gtag === 'function') {{
+          gtag('consent', 'update', {{ 'analytics_storage': 'granted' }});
+        }}
+        banner.hidden = true;
+      }}
+      var a = document.getElementById('consent-accept');
+      var d = document.getElementById('consent-decline');
+      if (a) a.addEventListener('click', function () {{ choose('granted'); }});
+      if (d) d.addEventListener('click', function () {{ choose('denied'); }});
+    }})();
+  </script>
+"""
+
+
 def head(lang, key, title, desc, ld=""):
     canonical = SITE + ROUTES[key][lang]
     en_url = SITE + ROUTES[key]["en"]
@@ -736,7 +875,7 @@ def head(lang, key, title, desc, ld=""):
     return f"""<!DOCTYPE html>
 <html lang="{HTML_LANG[lang]}">
 <head>
-  <meta charset="UTF-8" />
+{ga_head()}  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content="{desc}" />
@@ -811,6 +950,7 @@ def footer(lang):
         <a href="{ROUTES['custom_dev'][lang]}">{nav['custom_dev']}</a>
         <a href="{ROUTES['about'][lang]}">{nav['consulting']}</a>
         <a href="{home}#contact">{nav['contact']}</a>
+        <a href="{ROUTES['privacy'][lang]}">{nav['privacy']}</a>
       </nav>
       <p class="footer-copy">&copy; <span id="year">2026</span> iskeru</p>
     </div>
@@ -828,7 +968,7 @@ def footer(lang):
       }});
     }}
   </script>
-</body>
+{consent_banner(lang)}</body>
 </html>
 """
 
@@ -1243,6 +1383,39 @@ def render_custom_dev(lang):
     return page(lang, "custom_dev", t["cdev_title"], t["cdev_desc"], body, ld=ld)
 
 
+def render_privacy(lang):
+    """Minimal, factual bilingual privacy/cookie policy backing the consent
+    banner (spec 004). Kept simple — a fuller legal review can follow separately."""
+    t = T[lang]
+    body = f"""  <main id="main">
+    <section class="hero">
+      <div class="container narrow">
+        <p class="eyebrow">{t['privacy_eyebrow']}</p>
+        <h1>{t['privacy_h1']}</h1>
+        <p class="lede">{t['privacy_lede']}</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container narrow">
+        <h2 class="section-title">{t['privacy_analytics_title']}</h2>
+        <p>{t['privacy_analytics_p']}</p>
+
+        <h2 class="section-title" style="margin-top:48px;">{t['privacy_cookies_title']}</h2>
+        <p>{t['privacy_cookies_p']}</p>
+
+        <h2 class="section-title" style="margin-top:48px;">{t['privacy_withdraw_title']}</h2>
+        <p>{t['privacy_withdraw_p']}</p>
+
+        <p style="margin-top:32px;">{t['privacy_contact_pre']}<a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
+      </div>
+    </section>
+  </main>
+"""
+    return page(lang, "privacy", t["privacy_title"], t["privacy_desc"], body,
+                ld=ld_script([person_ld(lang)]))
+
+
 def notfound_block(lang):
     """One language's slice of the bilingual 404 body. All links are absolute
     (ROUTES values are already absolute) since a 404 is served at any depth."""
@@ -1279,7 +1452,8 @@ def render_notfound():
 # ----------------------------------------------------------------------------
 
 RENDERERS = {"home": render_home, "products": render_products, "about": render_about,
-             "fractional_cto": render_fractional_cto, "custom_dev": render_custom_dev}
+             "fractional_cto": render_fractional_cto, "custom_dev": render_custom_dev,
+             "privacy": render_privacy}
 
 
 def out_path(route):
