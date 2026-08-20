@@ -1,7 +1,7 @@
 # 004 — Google Analytics (GA4) with Consent Mode v2
 
-> Status: **todo**
-> Branch: _tbd_ · No Linear ticket.
+> Status: **doing**
+> Branch: `moacyrricardo/spec-004-google-analytics-consent` · No Linear ticket.
 
 ## Context
 
@@ -45,9 +45,10 @@ independent and can land in either order.
 Add GA4 via `gtag.js` in `head()`, **gated behind Consent Mode v2 (analytics denied by default)**
 and a minimal bilingual cookie-consent banner. Concretely:
 
-1. **Config constant.** Add `GA_MEASUREMENT_ID = "G-XXXXXXXXXX"` near the other site constants in
-   `build.py` (owner replaces the placeholder with the real stream ID). If it is left empty/None,
-   `head()` emits **no** analytics markup at all — so the build stays clean until the ID exists.
+1. **Config constant.** Add `GA_MEASUREMENT_ID = "G-H4S91E1LWD"` near the other site constants in
+   `build.py` — the real web-stream ID for the `iskeru.com` GA4 property (public client-side value;
+   safe to commit). If it is ever left empty/`None`, `head()` emits **no** analytics markup at all —
+   so the build stays clean when the ID is absent.
 
 2. **Head order (strict).** Inside `head()`, immediately after `<head>` and **before** any other
    resource, emit in this order:
@@ -86,7 +87,7 @@ and a minimal bilingual cookie-consent banner. Concretely:
 
 ## Implementation
 
-- **`build.py` constants:** add `GA_MEASUREMENT_ID = "G-XXXXXXXXXX"` beside `SITE`/`EMAIL`
+- **`build.py` constants:** add `GA_MEASUREMENT_ID = "G-H4S91E1LWD"` beside `SITE`/`EMAIL`
   (`build.py:20–24`).
 - **`build.py` `head()` (731–766):** after `<head>` (line 738), inject the consent-default +
   gtag.js block (Decision #2/#3), guarded by `if GA_MEASUREMENT_ID:` so an empty ID emits nothing.
