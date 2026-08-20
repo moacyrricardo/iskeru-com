@@ -16,6 +16,11 @@ import shutil
 
 SITE = "https://iskeru.com"
 EMAIL = "contato@iskeru.com"
+# GA4 web-stream Measurement ID for the iskeru.com property. This is a public,
+# client-side value (it appears in every page's source by design), so committing
+# it is correct — no secret handling. Leave empty ("") to emit no analytics
+# markup at all (clean build with no tag, no banner).
+GA_MEASUREMENT_ID = "G-H4S91E1LWD"
 LINKEDIN = "https://www.linkedin.com/in/moacyrricardo"
 GITHUB = "https://github.com/moacyrricardo"
 OG_IMAGE = "/assets/og-image.png"  # 1200x630 social card (asset produced separately)
@@ -728,6 +733,47 @@ def ld_script(nodes):
 # Rendering helpers
 # ----------------------------------------------------------------------------
 
+def ga_head():
+    """GA4 gtag.js behind Google Consent Mode v2, injected at the very top of
+    <head>. Returns "" when GA_MEASUREMENT_ID is empty so the build stays clean.
+
+    Order is strict and load-bearing (spec 004, Decision #2/#3):
+      1. Consent Mode defaults — analytics_storage denied — MUST run before the
+         tag loads, or Consent Mode does nothing. A stored 'granted' choice is
+         replayed here so returning visitors keep analytics on before config runs.
+      2. The gtag.js tag, then js()/config() with the config call host-gated to
+         iskeru.com so localhost/preview builds send nothing to GA.
+    """
+    if not GA_MEASUREMENT_ID:
+        return ""
+    gid = GA_MEASUREMENT_ID
+    return f"""  <!-- Google Consent Mode v2 — analytics denied by default (GDPR/ePrivacy/LGPD) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('consent', 'default', {{
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'analytics_storage': 'denied',
+      'wait_for_update': 500
+    }});
+    try {{
+      if (localStorage.getItem('iskeru_consent') === 'granted') {{
+        gtag('consent', 'update', {{ 'analytics_storage': 'granted' }});
+      }}
+    }} catch (e) {{}}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id={gid}"></script>
+  <script>
+    gtag('js', new Date());
+    if (location.hostname === 'iskeru.com') {{
+      gtag('config', '{gid}');
+    }}
+  </script>
+"""
+
+
 def head(lang, key, title, desc, ld=""):
     canonical = SITE + ROUTES[key][lang]
     en_url = SITE + ROUTES[key]["en"]
@@ -736,7 +782,7 @@ def head(lang, key, title, desc, ld=""):
     return f"""<!DOCTYPE html>
 <html lang="{HTML_LANG[lang]}">
 <head>
-  <meta charset="UTF-8" />
+{ga_head()}  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content="{desc}" />
