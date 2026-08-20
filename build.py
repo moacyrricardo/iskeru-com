@@ -838,10 +838,10 @@ def consent_banner(lang):
     </div>
   </div>
   <style>
-    .consent-banner{{position:fixed;left:0;right:0;bottom:0;z-index:1000;background:#fff;border-top:1px solid #e5e7eb;box-shadow:0 -4px 24px rgba(0,0,0,.08);}}
+    .consent-banner{{position:fixed;left:0;right:0;bottom:0;z-index:1000;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -8px 40px -12px rgba(0,0,0,.6);}}
     .consent-banner[hidden]{{display:none;}}
     .consent-inner{{max-width:1080px;margin:0 auto;padding:16px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;}}
-    .consent-text{{margin:0;font-size:14px;line-height:1.5;max-width:64ch;}}
+    .consent-text{{margin:0;font-size:14px;line-height:1.5;max-width:64ch;color:var(--text);}}
     .consent-actions{{display:flex;gap:8px;flex-shrink:0;}}
   </style>
   <script>
