@@ -18,17 +18,20 @@ and renames it). Before/after evidence lives under [`evidence/`](./evidence).
 | 001 | Custom bilingual 404 page | ✅ done | PR #1 → `main` 2026-06-22 (finish PR #6). Origin nginx `error_page`/`internal` wiring **applied & verified live 2026-07-14** (bogus URL serves the custom page; `/404.html` no longer directly fetchable). |
 | 002 | SEO positioning: intent-matched service pages | ✅ done | PR #2 → `main` 2026-06-23 (merge `7851d37`, finish PR #3). Fractional-CTO + custom-development pages, JSON-LD structured data, `og:image`. |
 | 003 | Landing performance: kill render-blocking CSS & Google Fonts (LCP) | ⚪ todo | Self-host Inter/Space Grotesk fonts + inline CSS to clear PageSpeed render-blocking (~1,970 ms) and the 3-hop font critical chain. Also Cloudflare Email-Obfuscation removal + `/assets/*` cache TTL. No branch yet. |
-| 004 | Google Analytics (GA4) with Consent Mode v2 | 🟡 doing | PR #10 on `moacyrricardo/spec-004-google-analytics-consent`. `gtag.js` in `head()` behind Consent Mode v2 (analytics denied by default) + a minimal bilingual cookie banner; host-gated to `iskeru.com`. Adds a minimal privacy page (`/privacy/`, `/pt/privacidade/`). Real Measurement ID `G-H4S91E1LWD` committed. GTM preconnect deferred until 003 merges. |
+| 004 | Google Analytics (GA4) with Consent Mode v2 | ✅ done | PR #10 → `main` 2026-08-20 (merge `14fa2f0`). `gtag.js` in `head()` behind Consent Mode v2 (analytics denied by default) + bilingual cookie banner (dark, high-contrast — fixed post-review); host-gated to `iskeru.com`; minimal privacy page (`/privacy/`, `/pt/privacidade/`). Measurement ID `G-H4S91E1LWD`. Deployed; Realtime confirmed receiving. GTM preconnect deferred until 003. |
+| 005 | GA4 interaction events: profile/repo/contact funnel + engagement | ⚪ todo | Host+path-classified `profile_click` / `repo_click` / `contact_click` events via one standalone delegated listener; broadens 004's host-gate to `www` (allowlist); updates privacy page to disclose interaction tracking. Funnel/Key-events/dimensions in GA4 console; search queries deferred to spec 006. **Revised after red-team** (consent-bias ceiling, github over-match, ES5-safety, stale citations). No branch yet. |
 
 ## Notes
 
-- **003 and 004 are the open work.** 003 touches `build.py` `head()` (self-host fonts,
-  inline/non-block CSS) plus two out-of-repo steps — a Cloudflare dashboard change
-  (disable Email Address Obfuscation) and a `/assets/*` cache-control policy — that
-  can't be fully verified from the repo alone. Note the origin already serves
-  `/assets/` at `expires 7d` (modest, non-fingerprinted); spec-003 §4 revisits this.
-- **004** touches the same `head()` choke point (GA4 tag + Consent Mode defaults) plus the
-  `T` dict and a new `render_privacy` page; the only out-of-repo steps are creating the GA4
-  property/stream to mint the `G-…` ID and setting internal-traffic/retention in GA4 Admin.
-  004's `googletagmanager.com` request is `async` (off the critical path), so it does not
-  reintroduce the render-blocking 003 fixes — the two can land in either order.
+- **003 and 005 are the open work** (004 shipped & deployed). 003 touches `build.py` `head()`
+  (self-host fonts, inline/non-block CSS) plus two out-of-repo steps — a Cloudflare dashboard
+  change (disable Email Address Obfuscation) and a `/assets/*` cache-control policy — that
+  can't be fully verified from the repo alone. Note the origin already serves `/assets/` at
+  `expires 7d` (modest, non-fingerprinted); spec-003 §4 revisits this.
+- **005** builds on 004: adds explicit interaction events (`social_click`, `contact_click`) via
+  one delegated footer listener + broadens 004's host-gate to `www`. Most of its value (funnel
+  exploration, Key events, custom dimensions) is GA4-console config, out-of-repo. Engagement-time
+  reporting needs no code (Enhanced Measurement already collects it). Depends on 004 (merged);
+  independent of 003.
+- **006 (recommended, not yet written):** Search Console verification + GA4 link — the
+  search-query side of analytics (ask surfaced during 005). Console/DNS setup, not build code.
