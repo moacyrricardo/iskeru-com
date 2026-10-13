@@ -9,7 +9,7 @@ Products (grouped by area on the products page):
 - **Automation** — hive (soon)
 - **Infrastructure** — [compute-admin](https://github.com/moacyrricardo/compute-admin) (open source), [moacyr-skills](https://moacyrricardo.github.io/skills) (open source)
 - **Construction & renovation** — obralog (soon)
-- **Events** — [cevem](https://cevem.iskeru.com)
+- **Events** — [Cevem.Ai](https://cevem.ai)
 - **Buildings** — pacdoorman (soon)
 
 ## How it works
