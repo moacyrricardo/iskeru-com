@@ -9,6 +9,7 @@ both languages (English at /, Portuguese at /pt/) as plain static HTML.
 No external dependencies — standard library only.
 """
 
+import hashlib
 import html
 import json
 import os
@@ -25,6 +26,16 @@ GA_MEASUREMENT_ID = "G-H4S91E1LWD"
 LINKEDIN = "https://www.linkedin.com/in/moacyrricardo"
 GITHUB = "https://github.com/moacyrricardo"
 OG_IMAGE = "/assets/og-image.png"  # 1200x630 social card (asset produced separately)
+
+
+def _asset_version(rel):
+    """Short content hash for cache-busting: /assets/* is cached for days by the
+    browser and Cloudflare, so a changed file must get a new URL to be picked up."""
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), rel), "rb") as fh:
+        return hashlib.sha256(fh.read()).hexdigest()[:10]
+
+
+STYLES_HREF = "/assets/styles.css?v=" + _asset_version("assets/styles.css")
 NBHY = "&#8209;"  # non-breaking hyphen, for "lineu-ai"
 PERSON_NAME = "Moacyr Ricardo"
 
@@ -928,7 +939,7 @@ def head(lang, key, title, desc, ld="", og_type="website"):
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="stylesheet" href="{STYLES_HREF}" />
 {ld}</head>
 <body>
   <a class="skip-link" href="#main">{T[lang]['skip']}</a>
