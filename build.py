@@ -1518,7 +1518,7 @@ POST_T = {
            "banner": "Automatically translated by Claude from Portuguese.",
            "banner_link": "Read the original in Portuguese",
            "product_label": "Product in this post", "see_product": "See in Products",
-           "read_post": "Read the post"},
+           "read_post": "Read the post", "written": "written"},
     "pt": {"eyebrow": "Posts", "h1": "Notas de quem constrói.",
            "lede": "Artigos sobre o que eu construo — IA local, produtos e engenharia — com os números de verdade.",
            "page_title": "Posts — Moacyr Ricardo | iskeru",
@@ -1527,7 +1527,7 @@ POST_T = {
            "banner": "Traduzido automaticamente pelo Claude a partir do inglês.",
            "banner_link": "Ler o original em inglês",
            "product_label": "Produto deste post", "see_product": "Ver em Produtos",
-           "read_post": "Ler o post"},
+           "read_post": "Ler o post", "written": "escrito em"},
 }
 MONTHS = {"en": "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(),
           "pt": "jan fev mar abr mai jun jul ago set out nov dez".split()}
@@ -1582,7 +1582,8 @@ def load_posts():
         posts.append({"id": pid, "key": key, "langs": langs, "original": originals[0],
                       "date": langs[originals[0]]["meta"]["date"],
                       "product": langs[originals[0]]["meta"].get("product")})
-    posts.sort(key=lambda p: p["date"], reverse=True)
+    # Newest first. Same-day posts keep a stable order: by folder id, descending.
+    posts.sort(key=lambda p: (p["date"], p["id"]), reverse=True)
     return posts
 
 
@@ -1688,6 +1689,26 @@ def render_markdown(src, pid, embed_title):
     return "\n".join(out)
 
 
+def written_label(meta, lang):
+    """`written: YYYY-MM` -> "written Sep 2026" / "escrito em set 2026" (drafted earlier, published at `date`)."""
+    w = str(meta.get("written", "")).strip()
+    if not w:
+        return ""
+    y, m = w.split("-")[:2]
+    return f"{POST_T[lang]['written']} {MONTHS[lang][int(m) - 1]} {y}"
+
+
+def post_meta_line(meta, lang, author=False):
+    parts = []
+    if author:
+        parts.append(f"<span>{html.escape(meta.get('author', PERSON_NAME))}</span>")
+    parts.append(f'<time datetime="{meta["date"]}">{fmt_date(meta["date"], lang)}</time>')
+    for extra in (written_label(meta, lang), reading_time(meta, lang)):
+        if extra:
+            parts.append(extra)
+    return " · ".join(parts)
+
+
 def reading_time(meta, lang):
     rt = str(meta.get("reading_time", "")).replace("~", "").strip()
     return f"{rt} {POST_T[lang]['read']}" if rt else ""
@@ -1707,6 +1728,7 @@ def post_ld(post, lang):
         "headline": meta["title"],
         "description": meta["summary"],
         "datePublished": meta["date"],
+        **({"dateCreated": meta["written"]} if meta.get("written") else {}),
         "inLanguage": HTML_LANG[lang],
         "url": url,
         "mainEntityOfPage": url,
@@ -1755,7 +1777,6 @@ def render_post(post, lang):
              if meta.get("cover") else "")
     prose = render_markdown(body, post["id"], meta["title"])
     title = html.escape(meta["title"])
-    rt = reading_time(meta, lang)
     body_html = f"""  <main id="main">
     <article class="post" lang="{HTML_LANG[lang]}">
       <header class="hero post-hero">
@@ -1763,7 +1784,7 @@ def render_post(post, lang):
           {cover}
           <p class="eyebrow"><a href="{ROUTES['posts'][lang]}">{t['eyebrow']}</a></p>
           <h1>{title}</h1>
-          <p class="post-meta"><span>{html.escape(meta.get('author', PERSON_NAME))}</span> · <time datetime="{meta['date']}">{fmt_date(meta['date'], lang)}</time>{' · ' + rt if rt else ''}</p>
+          <p class="post-meta">{post_meta_line(meta, lang, author=True)}</p>
           {banner}
           {tags_html(meta.get('tags', []))}
         </div>
@@ -1788,9 +1809,8 @@ def post_list_item(post, lang):
     meta = post["langs"][lang]["meta"]
     tr = (f' <span class="badge badge-translated">{t["translated"]}</span>'
           if lang != post["original"] else "")
-    rt = reading_time(meta, lang)
     return f"""          <article class="post-item">
-            <p class="post-meta"><time datetime="{meta['date']}">{fmt_date(meta['date'], lang)}</time>{' · ' + rt if rt else ''}{tr}</p>
+            <p class="post-meta">{post_meta_line(meta, lang)}{tr}</p>
             <h2><a href="{ROUTES[post['key']][lang]}">{html.escape(meta['title'])}</a></h2>
             <p class="post-summary">{html.escape(meta['summary'])}</p>
             {tags_html(meta.get('tags', []))}
