@@ -123,6 +123,14 @@ class PostsTest(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(self._tmp, "assets/posts/fofoca/benchmarks-mx230.html")))
         self.assertTrue(os.path.isfile(os.path.join(self._tmp, "assets/posts/fofoca/fofoca-logo.png")))
 
+    def test_demo_gif_under_tldr(self):
+        for page, alt in (("pt_post", "fo-foca funcionando"), ("en_post", "fo-foca in action")):
+            h = self.html[page]
+            img = h.index(f'<img src="/assets/posts/fofoca/demo.gif" alt="{alt}"')
+            self.assertLess(h.index("TL;DR"), img)
+            self.assertLess(img, h.index("<h2>"))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp, "assets/posts/fofoca/demo.gif")))
+
     def test_published_benchmark_has_no_local_paths(self):
         bench = self.read("assets/posts/fofoca/benchmarks-mx230.html")
         for leak in ("/mnt/", "/tmp/", "~/.config", "qwenb", "your recording"):

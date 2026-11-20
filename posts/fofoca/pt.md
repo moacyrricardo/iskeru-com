@@ -15,6 +15,8 @@ product: fofoca
 
 **TL;DR**: queria tomar notas automaticamente e acabei construindo um app que roda local e roda LLMs e processos locais. Sem web, sem modelo na nuvem. Brinquei de compartilhar multiplos modelos em uma GPU de 2GB e de fazer swap. Aprendi um bocado em 1 dia :) - e ainda construí o fofoca.
 
+![fo-foca funcionando](demo.gif)
+
 ## Onde eu comecei
 
 Eu queria uma coisa simples: sair de uma reunião com o que foi dito e o que ficou combinado, sem
