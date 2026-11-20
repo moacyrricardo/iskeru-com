@@ -136,6 +136,16 @@ class PostsTest(unittest.TestCase):
         for leak in ("/mnt/", "/tmp/", "~/.config", "qwenb", "your recording"):
             self.assertNotIn(leak, bench)
 
+    def test_stylesheet_url_changes_with_its_content(self):
+        # /assets/* is cached for 7 days (browser + Cloudflare); the URL must carry a
+        # content hash or new styles never reach visitors (seen live after spec 008).
+        import hashlib
+        with open(os.path.join(ROOT, "assets", "styles.css"), "rb") as fh:
+            digest = hashlib.sha256(fh.read()).hexdigest()[:10]
+        for page in self.html.values():
+            self.assertIn(f'href="/assets/styles.css?v={digest}"', page)
+        self.assertIn(f'href="/assets/styles.css?v={digest}"', self.read("404.html"))
+
     # --- product link ---------------------------------------------------------
     def test_fofoca_on_products_page(self):
         prod = self.read("pt/produtos/index.html")
