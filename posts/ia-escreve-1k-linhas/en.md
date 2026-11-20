@@ -2,8 +2,7 @@
 title: "AI writes 1k lines. You're the one who reads them."
 slug: ai-writes-1k-lines
 lang: en
-date: 2026-11-20
-written: 2026-09
+date: 2026-09-20
 author: Moacyr Ricardo
 tags: [claude code, skills, rich-html, code review, decisions]
 reading_time: ~5 min

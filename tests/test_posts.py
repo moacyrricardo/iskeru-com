@@ -146,15 +146,11 @@ class PostsTest(unittest.TestCase):
             self.assertIn(f'href="/assets/styles.css?v={digest}"', page)
         self.assertIn(f'href="/assets/styles.css?v={digest}"', self.read("404.html"))
 
-    def test_written_date_and_order(self):
-        pt = self.read("pt/posts/ia-escreve-1k-linhas/index.html")
-        en = self.read("posts/ai-writes-1k-lines/index.html")
-        self.assertIn(">20 nov 2026</time> · escrito em set 2026 · 5 min de leitura", pt)
-        self.assertIn(">Nov 20, 2026</time> · written Sep 2026 · 5 min read", en)
-        self.assertIn('"dateCreated": "2026-09"', en)
+    def test_posts_sorted_newest_first(self):
         idx = self.html["pt_index"]
-        self.assertLess(idx.index("/pt/posts/ia-escreve-1k-linhas/"), idx.index("/pt/posts/construindo-fofoca/"))
-        self.assertIn("escrito em set 2026", idx)
+        self.assertLess(idx.index("/pt/posts/construindo-fofoca/"), idx.index("/pt/posts/ia-escreve-1k-linhas/"))
+        pt = self.read("pt/posts/ia-escreve-1k-linhas/index.html")
+        self.assertIn('<time datetime="2026-09-20">20 set 2026</time>', pt)
 
     # --- product link ---------------------------------------------------------
     def test_fofoca_on_products_page(self):

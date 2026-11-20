@@ -2,8 +2,7 @@
 title: "A IA escreve 1k linhas. Quem lê é você."
 slug: ia-escreve-1k-linhas
 lang: pt-BR
-date: 2026-11-20
-written: 2026-09
+date: 2026-09-20
 author: Moacyr Ricardo
 tags: [claude code, skills, rich-html, code review, decisões]
 reading_time: ~5 min
