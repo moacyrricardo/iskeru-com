@@ -32,7 +32,11 @@ def _build_into(tmp):
 
 def _all_html(root):
     pages = []
-    for r, _, files in os.walk(root):
+    for r, dirs, files in os.walk(root):
+        # dist/assets/ holds static media (e.g. a post's embedded report, spec 008),
+        # not site pages — those carry neither the GA tag nor the consent banner.
+        if os.path.relpath(r, root) == ".":
+            dirs[:] = [d for d in dirs if d != "assets"]
         pages += [os.path.join(r, f) for f in files if f.endswith(".html")]
     return pages
 

@@ -9,6 +9,7 @@ both languages (English at /, Portuguese at /pt/) as plain static HTML.
 No external dependencies — standard library only.
 """
 
+import html
 import json
 import os
 import re
@@ -60,21 +61,22 @@ NAV = {
     "en": {"products": "Products", "company": "Company",
            "consulting": "Profile", "contact": "Contact",
            "fractional_cto": "Fractional CTO", "custom_dev": "Custom development",
-           "privacy": "Privacy"},
+           "privacy": "Privacy", "posts": "Posts"},
     "pt": {"products": "Produtos", "company": "Empresa",
            "consulting": "Perfil", "contact": "Contato",
            "fractional_cto": "CTO Fracional", "custom_dev": "Desenvolvimento",
-           "privacy": "Privacidade"},
+           "privacy": "Privacidade", "posts": "Posts"},
 }
 
 BADGE = {"live": {"en": "Live", "pt": "No ar"},
          "soon": {"en": "Coming soon", "pt": "Em breve"},
          "oss":  {"en": "Open source", "pt": "Código aberto"}}
 
-CATEGORIES = ["finance", "automation", "infra", "construction", "events", "buildings"]
+CATEGORIES = ["finance", "automation", "meetings", "infra", "construction", "events", "buildings"]
 CAT_NAME = {
     "finance":      {"en": "Finance", "pt": "Finanças"},
     "automation":   {"en": "Automation", "pt": "Automação"},
+    "meetings":     {"en": "Meetings", "pt": "Reuniões"},
     "infra":        {"en": "Infrastructure", "pt": "Infraestrutura"},
     "construction": {"en": "Construction & renovation", "pt": "Obras & reformas"},
     "events":       {"en": "Events", "pt": "Eventos"},
@@ -85,6 +87,8 @@ CAT_TAG = {
                      "pt": "Organização, automação e finanças pessoais"},
     "automation":   {"en": "Self-healing automation, driven by AI",
                      "pt": "Automação autorregenerativa, movida a IA"},
+    "meetings":     {"en": "Local AI for what happens in your calls",
+                     "pt": "IA local para o que acontece nas suas calls"},
     "infra":        {"en": "Agent-operable tooling for your machines",
                      "pt": "Ferramentas para suas máquinas, operáveis por agentes de IA"},
     "construction": {"en": "Track your renovation, end to end",
@@ -297,6 +301,31 @@ PRODUCTS = [
                          "prototype — mocks clicáveis com a cara do produto"],
             "note": "Código aberto (MIT) — adicione o marketplace e instale o que precisar.",
             "cta": "Conhecer os plugins",
+        },
+    },
+    {
+        "slug": "fofoca", "cat": "meetings", "status": "oss", "ai": True,
+        "name": "fo" + NBHY + "foca", "icon": "mic", "oss": True,
+        "cta_href": "https://github.com/moacyrricardo/fofoca", "cta_icon": "github",
+        "en": {
+            "tag": "Local meeting notes, pt-BR first",
+            "short": "Records and transcribes your calls live and writes checked notes — 100% on your machine.",
+            "desc": "An open-source meeting-notes app that runs entirely on your machine. It records the microphone and the call audio on separate tracks, transcribes live with Whisper, separates who spoke and writes notes where each point cites the part of the transcript it came from, with the numbers checked against it. No bot joins the call, nothing goes to the cloud, no account. Built for an ordinary laptop: it runs on a 2 GB GPU by swapping the speech and language models.",
+            "features": ["Live pt-BR transcription (Whisper large-v3-turbo)", "Notes checked against the transcript",
+                         "Speaker separation on the CPU", "Calendar via iCal, replay with word-by-word transcript",
+                         "Open source (MIT)"],
+            "note": "Pre-alpha — Linux, runs from source.",
+            "cta": "View on GitHub",
+        },
+        "pt": {
+            "tag": "Notas de reunião locais, pt-BR first",
+            "short": "Grava e transcreve suas calls ao vivo e gera notas checadas — 100% na sua máquina.",
+            "desc": "Um app open source de notas de reunião que roda inteiro na sua máquina. Grava o microfone e o áudio da call em trilhas separadas, transcreve ao vivo com Whisper, separa quem falou e gera notas em que cada ponto cita o trecho da transcrição de onde saiu, com os números conferidos contra ela. Nenhum bot entra na call, nada vai pra nuvem, sem conta. Feito pra notebook comum: roda numa GPU de 2 GB alternando os modelos de fala e de linguagem.",
+            "features": ["Transcrição ao vivo em pt-BR (Whisper large-v3-turbo)", "Notas checadas contra a transcrição",
+                         "Separação de falantes no CPU", "Calendário via iCal, replay com transcrição palavra por palavra",
+                         "Código aberto (MIT)"],
+            "note": "Pré-alpha — Linux, roda a partir do código.",
+            "cta": "Ver no GitHub",
         },
     },
 ]
@@ -653,7 +682,7 @@ T = {
 # Icons (inline SVG, Lucide-style line icons + brand fills; MIT-licensed art)
 # ----------------------------------------------------------------------------
 
-CAT_ICON = {"finance": "banknote", "automation": "plug", "infra": "shield",
+CAT_ICON = {"finance": "banknote", "automation": "plug", "meetings": "users", "infra": "shield",
             "construction": "building", "events": "calendar", "buildings": "building"}
 HELP_ICONS = ["users", "compass", "code"]
 
@@ -673,6 +702,7 @@ ICONS = {
     "code": ("line", '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>'),
     "mail": ("line", '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/>'),
     "cpu": ("line", '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2"/><path d="M15 2v2"/><path d="M9 20v2"/><path d="M15 20v2"/><path d="M2 9h2"/><path d="M2 15h2"/><path d="M20 9h2"/><path d="M20 15h2"/>'),
+    "mic": ("line", '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><line x1="12" y1="18" x2="12" y2="22"/>'),
     "plug": ("line", '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>'),
     "filter": ("line", '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>'),
     "credit-card": ("line", '<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>'),
@@ -867,7 +897,7 @@ def consent_banner(lang):
 """
 
 
-def head(lang, key, title, desc, ld=""):
+def head(lang, key, title, desc, ld="", og_type="website"):
     canonical = SITE + ROUTES[key][lang]
     en_url = SITE + ROUTES[key]["en"]
     pt_url = SITE + ROUTES[key]["pt"]
@@ -884,7 +914,7 @@ def head(lang, key, title, desc, ld=""):
   <link rel="alternate" hreflang="pt-BR" href="{pt_url}" />
   <link rel="alternate" hreflang="x-default" href="{en_url}" />
 
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content="{og_type}" />
   <meta property="og:site_name" content="iskeru" />
   <meta property="og:title" content="{title}" />
   <meta property="og:description" content="{desc}" />
@@ -926,6 +956,7 @@ def header(lang, key):
         <a href="{ROUTES['products'][lang]}">{nav['products']}</a>
         <a href="{ROUTES['fractional_cto'][lang]}">{nav['fractional_cto']}</a>
         <a href="{ROUTES['custom_dev'][lang]}">{nav['custom_dev']}</a>
+        <a href="{ROUTES['posts'][lang]}">{nav['posts']}</a>
         <a href="{ROUTES['about'][lang]}">{nav['consulting']}</a>
         <a href="{home}#contact">{nav['contact']}</a>
         {switch_html}
@@ -948,6 +979,7 @@ def footer(lang):
         <a href="{ROUTES['products'][lang]}">{nav['products']}</a>
         <a href="{ROUTES['fractional_cto'][lang]}">{nav['fractional_cto']}</a>
         <a href="{ROUTES['custom_dev'][lang]}">{nav['custom_dev']}</a>
+        <a href="{ROUTES['posts'][lang]}">{nav['posts']}</a>
         <a href="{ROUTES['about'][lang]}">{nav['consulting']}</a>
         <a href="{home}#contact">{nav['contact']}</a>
         <a href="{ROUTES['privacy'][lang]}">{nav['privacy']}</a>
@@ -973,8 +1005,8 @@ def footer(lang):
 """
 
 
-def page(lang, key, title, desc, body, ld=""):
-    return head(lang, key, title, desc, ld) + header(lang, key) + body + footer(lang)
+def page(lang, key, title, desc, body, ld="", og_type="website"):
+    return head(lang, key, title, desc, ld, og_type) + header(lang, key) + body + footer(lang)
 
 
 def badge(status, lang):
@@ -1000,6 +1032,10 @@ def product_article(p, lang):
         if "cta" in c and "cta_href" in p:
             tail += (f'          <a class="btn btn-ghost" href="{p["cta_href"]}">'
                      f'{icon(p.get("cta_icon", "mail"))}<span>{c["cta"]}</span></a>\n')
+    post = post_for_product(p["slug"])
+    if post:
+        tail += (f'          <a class="btn btn-ghost product-post" href="{ROUTES[post["key"]][lang]}">'
+                 f'{icon("file-text")}<span>{POST_T[lang]["read_post"]}</span></a>\n')
     return f"""        <article id="{p['slug']}" class="{cls}">
           <div class="product-head">
             <span class="ic-chip">{icon(p['icon'])}</span>
@@ -1451,9 +1487,343 @@ def render_notfound():
 # Output
 # ----------------------------------------------------------------------------
 
+# ----------------------------------------------------------------------------
+# Posts (spec 008): bilingual articles from posts/<id>/{pt,en}.md
+# ----------------------------------------------------------------------------
+# The author writes one language; the other is Claude's translation, marked by
+# `translated_by` in its front matter. Media in posts/<id>/media/ is published
+# at /assets/posts/<id>/.
+
+POSTS_DIR = os.path.join(ROOT, "posts")
+POST_LANG_FILE = {"en": "en.md", "pt": "pt.md"}
+ROUTES["posts"] = {"en": "/posts/", "pt": "/pt/posts/"}
+
+POST_T = {
+    "en": {"eyebrow": "Posts", "h1": "Notes from building.",
+           "lede": "Articles on what I build — local AI, products and engineering — with the real numbers.",
+           "page_title": "Posts — Moacyr Ricardo | iskeru",
+           "page_desc": "Articles by Moacyr Ricardo on local AI, products and engineering, with real numbers. Every post in English and Portuguese.",
+           "read": "read", "all": "← All posts", "translated": "Translated by Claude",
+           "banner": "Automatically translated by Claude from Portuguese.",
+           "banner_link": "Read the original in Portuguese",
+           "product_label": "Product in this post", "see_product": "See in Products",
+           "read_post": "Read the post"},
+    "pt": {"eyebrow": "Posts", "h1": "Notas de quem constrói.",
+           "lede": "Artigos sobre o que eu construo — IA local, produtos e engenharia — com os números de verdade.",
+           "page_title": "Posts — Moacyr Ricardo | iskeru",
+           "page_desc": "Artigos de Moacyr Ricardo sobre IA local, produtos e engenharia, com números reais. Todos os posts em português e inglês.",
+           "read": "de leitura", "all": "← Todos os posts", "translated": "Traduzido pelo Claude",
+           "banner": "Traduzido automaticamente pelo Claude a partir do inglês.",
+           "banner_link": "Ler o original em inglês",
+           "product_label": "Produto deste post", "see_product": "Ver em Produtos",
+           "read_post": "Ler o post"},
+}
+MONTHS = {"en": "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(),
+          "pt": "jan fev mar abr mai jun jul ago set out nov dez".split()}
+_FM_RE = re.compile(r"^---\n(.*?)\n---\n(.*)$", re.DOTALL)
+
+
+def parse_post_file(path):
+    """Front matter (simple `key: value` / `key: [a, b]`) + Markdown body."""
+    with open(path, encoding="utf-8") as fh:
+        m = _FM_RE.match(fh.read())
+    if not m:
+        raise SystemExit(f"{path}: missing front matter")
+    meta = {}
+    for line in m.group(1).splitlines():
+        if not line.strip():
+            continue
+        key, val = line.split(":", 1)
+        val = val.strip()
+        if val.startswith("[") and val.endswith("]"):
+            val = [v.strip() for v in val[1:-1].split(",") if v.strip()]
+        else:
+            val = val.strip('"')
+        meta[key.strip()] = val
+    for req in ("title", "slug", "date", "summary"):
+        if req not in meta:
+            raise SystemExit(f"{path}: front matter needs '{req}'")
+    return meta, m.group(2)
+
+
+def load_posts():
+    posts = []
+    if not os.path.isdir(POSTS_DIR):
+        return posts
+    for pid in sorted(os.listdir(POSTS_DIR)):
+        folder = os.path.join(POSTS_DIR, pid)
+        if not os.path.isdir(folder):
+            continue
+        langs = {}
+        for lang, fn in POST_LANG_FILE.items():
+            path = os.path.join(folder, fn)
+            if not os.path.isfile(path):
+                raise SystemExit(f"posts/{pid}: missing {fn} (every post needs both languages)")
+            meta, body = parse_post_file(path)
+            langs[lang] = {"meta": meta, "body": body}
+        originals = [l for l in LANGS if "translated_by" not in langs[l]["meta"]]
+        if len(originals) != 1:
+            raise SystemExit(f"posts/{pid}: exactly one language must be the original "
+                             f"(the other carries translated_by)")
+        key = "post:" + pid
+        ROUTES[key] = {"en": f"/posts/{langs['en']['meta']['slug']}/",
+                       "pt": f"/pt/posts/{langs['pt']['meta']['slug']}/"}
+        posts.append({"id": pid, "key": key, "langs": langs, "original": originals[0],
+                      "date": langs[originals[0]]["meta"]["date"],
+                      "product": langs[originals[0]]["meta"].get("product")})
+    posts.sort(key=lambda p: p["date"], reverse=True)
+    return posts
+
+
+POSTS = load_posts()
+
+
+def post_for_product(slug):
+    return next((p for p in POSTS if p["product"] == slug), None)
+
+
+def media_url(pid, name):
+    return f"/assets/posts/{pid}/{name}"
+
+
+def fmt_date(iso, lang):
+    y, m, d = iso.split("-")
+    mon = MONTHS[lang][int(m) - 1]
+    return f"{mon} {int(d)}, {y}" if lang == "en" else f"{int(d)} {mon} {y}"
+
+
+def md_inline(text, pid):
+    s = html.escape(text, quote=False)
+    s = re.sub(r"&lt;i&gt;(.*?)&lt;/i&gt;", r"<em>\1</em>", s)
+    s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
+    s = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)\)",
+               lambda m: f'<img src="{m.group(2) if "/" in m.group(2) else media_url(pid, m.group(2))}" '
+                         f'alt="{m.group(1)}" loading="lazy" />', s)
+    s = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", r'<a href="\2">\1</a>', s)
+    s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
+    s = re.sub(r"(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])", r"<em>\1</em>", s)
+    s = re.sub(r'(?<![/\w">])(github\.com/[\w./-]+[\w/])', r'<a href="https://\1">\1</a>', s)
+    return s
+
+
+_EMBED_RE = re.compile(r"^\*\(embed:.*?([\w.-]+\.html)\)\*$")
+_BLOCK_START = re.compile(r"(#{1,4} |>|\||- |!\[)")
+
+
+def render_markdown(src, pid, embed_title):
+    """The small Markdown subset the posts use. Everything is HTML-escaped."""
+    lines = src.strip("\n").split("\n")
+    out, i = [], 0
+    while i < len(lines):
+        ln = lines[i]
+        if not ln.strip() or ln.startswith("# "):   # H1 is the page title
+            i += 1
+            continue
+        m = re.match(r"(#{2,4}) (.*)", ln)
+        if m:
+            lvl = len(m.group(1))
+            out.append(f"<h{lvl}>{md_inline(m.group(2), pid)}</h{lvl}>")
+            i += 1
+            continue
+        m = _EMBED_RE.match(ln.strip())
+        if m:
+            name = m.group(1)
+            if not os.path.isfile(os.path.join(POSTS_DIR, pid, "media", name)):
+                raise SystemExit(f"posts/{pid}: embed '{name}' not found in media/")
+            out.append(f'<figure class="post-embed"><iframe src="{media_url(pid, name)}" '
+                       f'title="{html.escape(embed_title)}" loading="lazy"></iframe></figure>')
+            i += 1
+            continue
+        if ln.startswith("!["):
+            out.append(f'<figure class="post-figure">{md_inline(ln.strip(), pid)}</figure>')
+            i += 1
+            continue
+        if ln.startswith(">"):
+            buf = []
+            while i < len(lines) and lines[i].startswith(">"):
+                buf.append(lines[i][1:].strip())
+                i += 1
+            out.append(f"<blockquote><p>{md_inline(' '.join(buf), pid)}</p></blockquote>")
+            continue
+        if ln.startswith("|"):
+            rows = []
+            while i < len(lines) and lines[i].startswith("|"):
+                rows.append([c.strip() for c in lines[i].strip().strip("|").split("|")])
+                i += 1
+            head_row = rows[0]
+            body_rows = [r for r in rows[1:] if not all(re.fullmatch(r":?-+:?", c) for c in r)]
+            th = "".join(f"<th>{md_inline(c, pid)}</th>" for c in head_row)
+            trs = "".join("<tr>" + "".join(f"<td>{md_inline(c, pid)}</td>" for c in r) + "</tr>"
+                          for r in body_rows)
+            out.append(f'<div class="table-wrap"><table><thead><tr>{th}</tr></thead>'
+                       f"<tbody>{trs}</tbody></table></div>")
+            continue
+        if ln.startswith("- "):
+            items = []
+            while i < len(lines) and (lines[i].startswith("- ") or lines[i].startswith("  ")):
+                if lines[i].startswith("- "):
+                    items.append(lines[i][2:])
+                else:
+                    items[-1] += " " + lines[i].strip()
+                i += 1
+            out.append("<ul>" + "".join(f"<li>{md_inline(x, pid)}</li>" for x in items) + "</ul>")
+            continue
+        buf = []
+        while i < len(lines) and lines[i].strip() and not _BLOCK_START.match(lines[i]) \
+                and not _EMBED_RE.match(lines[i].strip()):
+            buf.append(lines[i])
+            i += 1
+        out.append(f"<p>{md_inline(' '.join(buf), pid)}</p>")
+    return "\n".join(out)
+
+
+def reading_time(meta, lang):
+    rt = str(meta.get("reading_time", "")).replace("~", "").strip()
+    return f"{rt} {POST_T[lang]['read']}" if rt else ""
+
+
+def tags_html(tags):
+    return ('<ul class="post-tags">' + "".join(f"<li>{html.escape(t)}</li>" for t in tags)
+            + "</ul>") if tags else ""
+
+
+def post_ld(post, lang):
+    meta = post["langs"][lang]["meta"]
+    url = SITE + ROUTES[post["key"]][lang]
+    node = {
+        "@type": "BlogPosting",
+        "@id": url + "#post",
+        "headline": meta["title"],
+        "description": meta["summary"],
+        "datePublished": meta["date"],
+        "inLanguage": HTML_LANG[lang],
+        "url": url,
+        "mainEntityOfPage": url,
+        "author": {"@id": PERSON_ID},
+        "keywords": meta.get("tags", []),
+    }
+    if meta.get("cover"):
+        node["image"] = SITE + media_url(post["id"], meta["cover"])
+    other = "pt" if lang == "en" else "en"
+    other_ref = {"@id": SITE + ROUTES[post["key"]][other] + "#post"}
+    node["translationOfWork" if lang != post["original"] else "workTranslation"] = other_ref
+    return node
+
+
+def product_box(post, lang):
+    p = next((x for x in PRODUCTS if x["slug"] == post["product"]), None)
+    if not p:
+        return ""
+    t, c = POST_T[lang], p[lang]
+    gh = (f'<a class="btn btn-ghost" href="{p["cta_href"]}">{icon(p.get("cta_icon", "arrow-right"))}'
+          f'<span>{c["cta"]}</span></a>') if p.get("cta_href") else ""
+    return f"""      <aside class="post-product">
+        <span class="ic-chip">{icon(p['icon'])}</span>
+        <div>
+          <p class="post-product-label">{t['product_label']}</p>
+          <h3>{p['name']} {ai_pill(p)} {badge(p['status'], lang)}</h3>
+          <p>{c['short']}</p>
+        </div>
+        <div class="post-product-actions">
+          <a class="btn btn-ghost" href="{ROUTES['products'][lang]}#{p['slug']}"><span>{t['see_product']}</span></a>
+          {gh}
+        </div>
+      </aside>
+"""
+
+
+def render_post(post, lang):
+    t = POST_T[lang]
+    meta, body = post["langs"][lang]["meta"], post["langs"][lang]["body"]
+    other = "pt" if lang == "en" else "en"
+    banner = ""
+    if lang != post["original"]:
+        banner = (f'<p class="tr-banner">{t["banner"]} '
+                  f'<a href="{ROUTES[post["key"]][other]}" hreflang="{HTML_LANG[other]}">{t["banner_link"]}</a></p>')
+    cover = (f'<img class="post-cover" src="{media_url(post["id"], meta["cover"])}" alt="" width="96" height="96" />'
+             if meta.get("cover") else "")
+    prose = render_markdown(body, post["id"], meta["title"])
+    title = html.escape(meta["title"])
+    rt = reading_time(meta, lang)
+    body_html = f"""  <main id="main">
+    <article class="post" lang="{HTML_LANG[lang]}">
+      <header class="hero post-hero">
+        <div class="container">
+          {cover}
+          <p class="eyebrow"><a href="{ROUTES['posts'][lang]}">{t['eyebrow']}</a></p>
+          <h1>{title}</h1>
+          <p class="post-meta"><span>{html.escape(meta.get('author', PERSON_NAME))}</span> · <time datetime="{meta['date']}">{fmt_date(meta['date'], lang)}</time>{' · ' + rt if rt else ''}</p>
+          {banner}
+          {tags_html(meta.get('tags', []))}
+        </div>
+      </header>
+      <div class="section post-section">
+        <div class="container">
+          <div class="prose">
+{prose}
+          </div>
+{product_box(post, lang) if post['product'] else ''}          <nav class="post-foot"><a href="{ROUTES['posts'][lang]}">{t['all']}</a></nav>
+        </div>
+      </div>
+    </article>
+  </main>
+"""
+    return page(lang, post["key"], f"{title} | iskeru", html.escape(meta["summary"]), body_html,
+                ld=ld_script([person_ld(lang), post_ld(post, lang)]), og_type="article")
+
+
+def post_list_item(post, lang):
+    t = POST_T[lang]
+    meta = post["langs"][lang]["meta"]
+    tr = (f' <span class="badge badge-translated">{t["translated"]}</span>'
+          if lang != post["original"] else "")
+    rt = reading_time(meta, lang)
+    return f"""          <article class="post-item">
+            <p class="post-meta"><time datetime="{meta['date']}">{fmt_date(meta['date'], lang)}</time>{' · ' + rt if rt else ''}{tr}</p>
+            <h2><a href="{ROUTES[post['key']][lang]}">{html.escape(meta['title'])}</a></h2>
+            <p class="post-summary">{html.escape(meta['summary'])}</p>
+            {tags_html(meta.get('tags', []))}
+          </article>
+"""
+
+
+def render_posts(lang):
+    t = POST_T[lang]
+    items = "".join(post_list_item(p, lang) for p in POSTS)
+    body = f"""  <main id="main">
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">{t['eyebrow']}</p>
+        <h1>{t['h1']}</h1>
+        <p class="lede">{t['lede']}</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container narrow">
+        <div class="post-list">
+{items}        </div>
+      </div>
+    </section>
+  </main>
+"""
+    return page(lang, "posts", t["page_title"], t["page_desc"], body,
+                ld=ld_script([person_ld(lang)]))
+
+
+def copy_post_media():
+    for post in POSTS:
+        src = os.path.join(POSTS_DIR, post["id"], "media")
+        if os.path.isdir(src):
+            shutil.copytree(src, os.path.join(DIST, "assets", "posts", post["id"]))
+            print("copied", f"posts/{post['id']}/media")
+
+
 RENDERERS = {"home": render_home, "products": render_products, "about": render_about,
              "fractional_cto": render_fractional_cto, "custom_dev": render_custom_dev,
              "privacy": render_privacy}
+RENDERERS["posts"] = render_posts
+for _post in POSTS:
+    RENDERERS[_post["key"]] = (lambda post: lambda lang: render_post(post, lang))(_post)
 
 
 def out_path(route):
@@ -1550,6 +1920,7 @@ def main():
     write(os.path.join(DIST, "404.html"), render_notfound())
     write(os.path.join(DIST, "sitemap.xml"), render_sitemap())
     copy_static()
+    copy_post_media()
     seo_selfcheck()
     print("done. output in dist/")
 
