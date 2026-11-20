@@ -1,7 +1,7 @@
 # 008 — Posts: bilingual articles with Claude-translated counterparts
 
-> Status: **todo**
-> Branch: _tbd_ · No Linear ticket.
+> Status: **doing**
+> Branch: `moacyrricardo/spec-008-bilingual-posts` · No Linear ticket.
 
 ## Context
 
