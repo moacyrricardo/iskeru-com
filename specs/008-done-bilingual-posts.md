@@ -1,7 +1,7 @@
 # 008 — Posts: bilingual articles with Claude-translated counterparts
 
-> Status: **doing**
-> Branch: `moacyrricardo/spec-008-bilingual-posts` · No Linear ticket.
+> Status: **done**
+> Branch: `moacyrricardo/spec-008-bilingual-posts` (PR #12) + `moacyrricardo/spec-008-demo-gif` · No Linear ticket.
 
 ## Context
 
@@ -79,3 +79,25 @@ After merge: `ISKERU_SSH=<user@box> ISKERU_PATH=/var/www/iskeru ./deploy.sh`.
   re-translation by hand.
 - No RSS feed, no tag pages, no "latest posts" block on the homepage yet.
 - Spec 007's restyle is independent; posts ship in the current look and follow 007 when it lands.
+
+## Implementation Notes
+
+- Shipped as planned in PR #12 (squash `410b71f`); the demo GIF followed on
+  `moacyrricardo/spec-008-demo-gif` (`posts/fofoca/media/demo.gif`, 800×500, ~1 MB, under the TL;DR).
+- Posts register their routes in `ROUTES` at import time (`posts` + one `post:<id>` per post), so
+  `head()` (canonical/hreflang), the header's EN/PT switch and `render_sitemap()` needed no
+  post-specific code. `x-default` points at the EN URL like every other page, even when PT is the original.
+- The original language is whichever file has no `translated_by`; the build fails if both or neither do,
+  if either language file is missing, or if an embed names a file absent from `media/`.
+- Embeds are iframes of the published media file (`/assets/posts/<id>/<file>.html`), not `srcdoc`,
+  so the report is cached separately and the post HTML stays small.
+- The benchmark report was cleaned by hand into `posts/fofoca/media/benchmarks-mx230.html` (local paths,
+  session names, a `/rich-html:decide` aside and the local-only "Sources" items removed; "your recording"
+  → "the author's recording"). A test fails if `/mnt/`, `/tmp/`, `~/.config`, `qwenb` or "your recording" reappear.
+- The PT post is the author's text verbatim plus two links (`/prototype` → prototype guide,
+  "catálogo numerado" → spec-workflow guide); the EN translation carries the same links.
+- `tests/test_analytics_consent.py` now skips `dist/assets/` when it walks pages: static media is not a
+  site page and carries neither the GA tag nor the consent banner.
+- The post summary (front matter) still describes the older lead; the author may update it.
+- Not done (unchanged from Known Gaps): RSS, tag pages, a "latest posts" block on the homepage.
+

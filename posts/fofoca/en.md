@@ -16,6 +16,8 @@ translated_by: Claude
 
 **TL;DR**: I wanted to take notes automatically and ended up building an app that runs locally and runs LLMs and local processes. No web, no cloud model. I played with sharing multiple models on a 2 GB GPU and with swapping them. I learned a lot in 1 day :) - and I still built fofoca.
 
+![fo-foca in action](demo.gif)
+
 ## Where I started
 
 I wanted something simple: leave a meeting with what was said and what was agreed, without
