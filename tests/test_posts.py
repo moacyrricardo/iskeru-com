@@ -146,6 +146,12 @@ class PostsTest(unittest.TestCase):
             self.assertIn(f'href="/assets/styles.css?v={digest}"', page)
         self.assertIn(f'href="/assets/styles.css?v={digest}"', self.read("404.html"))
 
+    def test_posts_sorted_newest_first(self):
+        idx = self.html["pt_index"]
+        self.assertLess(idx.index("/pt/posts/construindo-fofoca/"), idx.index("/pt/posts/ia-escreve-1k-linhas/"))
+        pt = self.read("pt/posts/ia-escreve-1k-linhas/index.html")
+        self.assertIn('<time datetime="2026-09-20">20 set 2026</time>', pt)
+
     # --- product link ---------------------------------------------------------
     def test_fofoca_on_products_page(self):
         prod = self.read("pt/produtos/index.html")
