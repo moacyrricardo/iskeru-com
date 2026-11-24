@@ -1618,7 +1618,7 @@ def md_inline(text, pid):
 
 
 _EMBED_RE = re.compile(r"^\*\(embed:.*?([\w.-]+\.html)\)\*$")
-_NOTE_RE = re.compile(r"^\*\((?!embed:)(.+)\)\*$")
+_NOTE_RE = re.compile(r"^\*\((?!embed:)((?:(?!\)\*).)+)\)\*$")   # no ")*" inside: one aside per line
 _BLOCK_START = re.compile(r"(#{1,4} |>|\||- |!\[)")
 
 

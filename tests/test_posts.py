@@ -122,6 +122,11 @@ class PostsTest(unittest.TestCase):
         self.assertIn('<p class="post-note">(uma nota <strong>curta</strong>)</p>', out)
         self.assertIn("<p>texto <em>(normal)</em> aqui</p>", out)
 
+    def test_two_asides_on_one_line_stay_inline(self):
+        out = build.render_markdown("*(a)* meio *(b)*", "fofoca", "t")
+        self.assertNotIn("post-note", out)
+        self.assertIn("<p><em>(a)</em> meio <em>(b)</em></p>", out)
+
     def test_embed_points_at_published_media(self):
         for page in ("pt_post", "en_post"):
             self.assertIn('<iframe src="/assets/posts/fofoca/benchmarks-mx230.html"', self.html[page])
