@@ -117,6 +117,11 @@ class PostsTest(unittest.TestCase):
         self.assertIn("&lt;script&gt;", out)
         self.assertNotIn("<script>", out)
 
+    def test_note_line_renders_small_italic_paragraph(self):
+        out = build.render_markdown("*(uma nota **curta**)*\n\ntexto *(normal)* aqui", "fofoca", "t")
+        self.assertIn('<p class="post-note">(uma nota <strong>curta</strong>)</p>', out)
+        self.assertIn("<p>texto <em>(normal)</em> aqui</p>", out)
+
     def test_embed_points_at_published_media(self):
         for page in ("pt_post", "en_post"):
             self.assertIn('<iframe src="/assets/posts/fofoca/benchmarks-mx230.html"', self.html[page])
