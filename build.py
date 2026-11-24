@@ -1618,6 +1618,7 @@ def md_inline(text, pid):
 
 
 _EMBED_RE = re.compile(r"^\*\(embed:.*?([\w.-]+\.html)\)\*$")
+_NOTE_RE = re.compile(r"^\*\((?!embed:)(.+)\)\*$")
 _BLOCK_START = re.compile(r"(#{1,4} |>|\||- |!\[)")
 
 
@@ -1643,6 +1644,11 @@ def render_markdown(src, pid, embed_title):
                 raise SystemExit(f"posts/{pid}: embed '{name}' not found in media/")
             out.append(f'<figure class="post-embed"><iframe src="{media_url(pid, name)}" '
                        f'title="{html.escape(embed_title)}" loading="lazy"></iframe></figure>')
+            i += 1
+            continue
+        m = _NOTE_RE.match(ln.strip())
+        if m:   # *(aside)* on its own line: a small italic note
+            out.append(f'<p class="post-note">({md_inline(m.group(1), pid)})</p>')
             i += 1
             continue
         if ln.startswith("!["):
