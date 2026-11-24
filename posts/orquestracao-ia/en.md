@@ -6,13 +6,13 @@ date: 2026-11-24
 author: Moacyr Ricardo
 tags: [claude code, herdr, orchestration, skills, spec-workflow, rich-html, product]
 reading_time: ~7 min
-summary: "Orchestrating dozens of AI sessions is PM work: it takes study, practice and time set aside. herdr prompts for the data part."
+summary: "Orchestrating dozens of AI sessions is PM work: it takes study, testing and time set aside. herdr prompts for the data part."
 translated_by: Claude
 ---
 
 # Orchestrating with AI
 
-**TL;DR:** Orchestrating with AI only works with study and practice: you have to set time aside.
+**TL;DR:** Orchestrating with AI only works with study and testing: you have to set time aside.
 
 I was an annoying student - the pain in the neck with a smart answer for everything who talked the whole time. A teacher once said "when you actually need to study, you're going to fall off your horse". I passed with great grades and she wasn't there to see the horse throw me, somewhere in my early twenties: sitting down to study Calculus was way too hard. And even then I barely scraped by. My classmates - who also suffered, to be fair - seemed fine with it. I just wanted to get it over with and get out of there... but I had to sit down and learn how to study. It took time and effort.
 
@@ -30,7 +30,7 @@ AI helps a lot with the first part: it asks each session what it's doing, gather
 
 ## herdr
 
-Orca, herdr and t3code: each one lets you do this, in its own way. I'll talk about [herdr](https://herdr.dev).
+Orca, herdr and t3code: each one lets you do this kind of orchestration, in its own way. I'll talk about [herdr](https://herdr.dev).
 
 Set up herdr in your repo and start a conversation: ask the agent to look at what it can do with herdr (`herdr --skill`) or install its integration (`herdr integration install claude`).
 
@@ -78,7 +78,7 @@ And one last one, for those who saw [Matt Pocock talking about a "brain" session
 
 These prompts don't come out ready-made and probably won't work for you as they are: so invest a bit of time: try, fail and adjust until things hold up the way you'd like - adapted to **your** way of working. You already have the tools to learn how to study and tame this AI horse.
 
-And then, really, go talk to your PM and thank them for still putting up with your smart-aleck little face. Oh - Belzinha, my elementary-school English teacher: I fell off the horse, see? Thanks for the warning - and sorry for all the trouble I gave you.
+And then, really, go talk to your PM and thank them for having put up with your smart-aleck little face. Oh - Belzinha, my elementary-school English teacher: I fell off the horse, see? Thanks for the warning - and sorry for all the trouble I gave you.
 
 ## Try it
 
