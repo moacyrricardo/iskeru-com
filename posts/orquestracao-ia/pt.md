@@ -29,7 +29,7 @@ A IA ajuda bastante na primeira parte: ela pergunta pra cada sessão o que está
 
 ## O herdr
 
-Orca, herdr e t3code: cada um permite isso, do seu jeito. Vou falar do [herdr](https://herdr.dev).
+Orca, herdr e t3code: cada um permite fazer essa orquestração, do seu jeito. Vou falar do [herdr](https://herdr.dev).
 
 Configure o herdr no seu repo e comece uma conversa: peça pro agente ver o que dá pra fazer com o herdr (`herdr --skill`) ou instale a integração dele (`herdr integration install claude`).
 
@@ -73,7 +73,7 @@ E um último, pra quem viu o [Matt Pocock falando de uma sessão "cérebro"](htt
 
 *(O [boletim](https://boletim.iskeru.com) e o [minhabufunfa](https://minhabufunfa.iskeru.com) são dois produtos meus que conversam entre si)*
 
-## Reserve o tempo e agradeça seu pm
+## Reserve o tempo e agradeça seu PM
 
 Esses prompts não saem prontos e provavelmente não vão funcionar diretamente com você: então investe um pouco de tempo: teste, erre e ajuste até a coisa parar em pé do jeito que você gstaria - aaptado ao **seu** jeito de trabalhar. Você já tem ferramentas pra aprender a estudar e domar esse cavalo de IA.
 
