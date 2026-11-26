@@ -1029,6 +1029,14 @@ def ai_pill(p):
     return '<span class="badge badge-ai">AI</span>' if p.get("ai") else ''
 
 
+def cta2_link(p, lang, end=""):
+    """Optional secondary link on a product (e.g. GitHub beside a download CTA)."""
+    if not (p.get("cta2_href") and "cta2" in p[lang]):
+        return ""
+    return (f'          <a class="btn btn-ghost" href="{p["cta2_href"]}">'
+            f'{icon(p.get("cta2_icon", "arrow-right"))}<span>{p[lang]["cta2"]}</span></a>{end}')
+
+
 def product_article(p, lang):
     c = p[lang]
     hosted = p["status"] == "live"
@@ -1043,6 +1051,7 @@ def product_article(p, lang):
         if "cta" in c and "cta_href" in p:
             tail += (f'          <a class="btn btn-ghost" href="{p["cta_href"]}">'
                      f'{icon(p.get("cta_icon", "mail"))}<span>{c["cta"]}</span></a>\n')
+        tail += cta2_link(p, lang, "\n")
     post = post_for_product(p["slug"])
     if post:
         tail += (f'          <a class="btn btn-ghost product-post" href="{ROUTES[post["key"]][lang]}">'
@@ -1744,6 +1753,7 @@ def product_box(post, lang):
         <div class="post-product-actions">
           <a class="btn btn-ghost" href="{ROUTES['products'][lang]}#{p['slug']}"><span>{t['see_product']}</span></a>
           {gh}
+{cta2_link(p, lang)}
         </div>
       </aside>
 """
