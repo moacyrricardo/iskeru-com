@@ -81,12 +81,12 @@ as 9h do dia seguinte.
 
 - **Setup automático** — detectar GPU/RAM, escolher o que cabe, medir na primeira execução. Sim, a
   mesma ideia do Yogurt — mas mostrando o porquê e deixando você mudar tudo.
-- **Empacotamento** — AppImage.
+- **Empacotamento** — AppImage. *(Atualização 25/11: saiu — builds de teste em AppImage e .deb.)*
 - **Servidor MCP** (ainda em aberto) — deixar outras ferramentas de IA lerem suas reuniões.
 
 ## Testa aí
 
-Ainda é pré-alpha: Linux, roda do código. Relatos de hardware ("isso aqui cabe na minha GPU") e
+Ainda é pré-alpha: Linux x86-64, agora com builds de teste (AppImage e .deb). Relatos de hardware ("isso aqui cabe na minha GPU") e
 gravações de teste em pt-BR são muito bem-vindos.
 
-Se quiser testar e dar um feedback: github.com/moacyrricardo/fofoca - enjoy :)
+Pra baixar e instalar: [moacyrricardo.github.io/fofoca](https://moacyrricardo.github.io/fofoca/). Se quiser testar e dar um feedback: github.com/moacyrricardo/fofoca - enjoy :)

@@ -317,26 +317,31 @@ PRODUCTS = [
     {
         "slug": "fofoca", "cat": "meetings", "status": "oss", "ai": True,
         "name": "fo" + NBHY + "foca", "icon": "mic", "oss": True,
-        "cta_href": "https://github.com/moacyrricardo/fofoca", "cta_icon": "github",
+        "cta_href": "https://moacyrricardo.github.io/fofoca/", "cta_icon": "download",
+        "cta2_href": "https://github.com/moacyrricardo/fofoca", "cta2_icon": "github",
         "en": {
             "tag": "Local meeting notes, pt-BR first",
             "short": "Records and transcribes your calls live and writes checked notes — 100% on your machine.",
-            "desc": "An open-source meeting-notes app that runs entirely on your machine. It records the microphone and the call audio on separate tracks, transcribes live with Whisper, separates who spoke and writes notes where each point cites the part of the transcript it came from, with the numbers checked against it. No bot joins the call, nothing goes to the cloud, no account. Built for an ordinary laptop: it runs on a 2 GB GPU by swapping the speech and language models.",
-            "features": ["Live pt-BR transcription (Whisper large-v3-turbo)", "Notes checked against the transcript",
-                         "Speaker separation on the CPU", "Calendar via iCal, replay with word-by-word transcript",
+            "desc": "An open-source meeting-notes app that runs entirely on your machine. It records the microphone and the call audio on separate tracks, transcribes live with Whisper and keeps a running summary during the call; afterwards it separates who spoke and writes notes where each point cites the part of the transcript it came from, with the numbers checked against it. No bot joins the call, nothing goes to the cloud, no account. Built for an ordinary laptop: it runs on a 2 GB GPU by swapping the speech and language models.",
+            "features": ["Live pt-BR transcription (Whisper large-v3-turbo)", "Summary and tasks checked against the transcript",
+                         "Speaker separation after the call", "Calendar via iCal, replay with word-by-word transcript",
+                         "Tasks across meetings, filtered by label", "Any Vulkan GPU (2 GB is enough) or CPU only",
                          "Open source (MIT)"],
-            "note": "Pre-alpha — Linux, runs from source.",
-            "cta": "View on GitHub",
+            "note": "Pre-alpha — Linux x86-64 test builds (AppImage, .deb).",
+            "cta": "Download &amp; install",
+            "cta2": "View on GitHub",
         },
         "pt": {
             "tag": "Notas de reunião locais, pt-BR first",
             "short": "Grava e transcreve suas calls ao vivo e gera notas checadas — 100% na sua máquina.",
-            "desc": "Um app open source de notas de reunião que roda inteiro na sua máquina. Grava o microfone e o áudio da call em trilhas separadas, transcreve ao vivo com Whisper, separa quem falou e gera notas em que cada ponto cita o trecho da transcrição de onde saiu, com os números conferidos contra ela. Nenhum bot entra na call, nada vai pra nuvem, sem conta. Feito pra notebook comum: roda numa GPU de 2 GB alternando os modelos de fala e de linguagem.",
-            "features": ["Transcrição ao vivo em pt-BR (Whisper large-v3-turbo)", "Notas checadas contra a transcrição",
-                         "Separação de falantes no CPU", "Calendário via iCal, replay com transcrição palavra por palavra",
+            "desc": "Um app open source de notas de reunião que roda inteiro na sua máquina. Grava o microfone e o áudio da call em trilhas separadas, transcreve ao vivo com Whisper e mantém um resumo parcial durante a call; depois, separa quem falou e gera notas em que cada ponto cita o trecho da transcrição de onde saiu, com os números conferidos contra ela. Nenhum bot entra na call, nada vai pra nuvem, sem conta. Feito pra notebook comum: roda numa GPU de 2 GB alternando os modelos de fala e de linguagem.",
+            "features": ["Transcrição ao vivo em pt-BR (Whisper large-v3-turbo)", "Resumo e tarefas checados contra a transcrição",
+                         "Separação de falantes depois da call", "Calendário via iCal, replay com transcrição palavra por palavra",
+                         "Tarefas de todas as reuniões, filtradas por rótulo", "Qualquer GPU com Vulkan (2 GB bastam) ou só CPU",
                          "Código aberto (MIT)"],
-            "note": "Pré-alpha — Linux, roda a partir do código.",
-            "cta": "Ver no GitHub",
+            "note": "Pré-alpha — builds de teste para Linux x86-64 (AppImage, .deb).",
+            "cta": "Baixar e instalar",
+            "cta2": "Ver no GitHub",
         },
     },
 ]
@@ -711,6 +716,7 @@ ICONS = {
     "compass": ("line", '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>'),
     "search": ("line", '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'),
     "code": ("line", '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>'),
+    "download": ("line", '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>'),
     "mail": ("line", '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/>'),
     "cpu": ("line", '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2"/><path d="M15 2v2"/><path d="M9 20v2"/><path d="M15 20v2"/><path d="M2 9h2"/><path d="M2 15h2"/><path d="M20 9h2"/><path d="M20 15h2"/>'),
     "mic": ("line", '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><line x1="12" y1="18" x2="12" y2="22"/>'),
@@ -1029,6 +1035,14 @@ def ai_pill(p):
     return '<span class="badge badge-ai">AI</span>' if p.get("ai") else ''
 
 
+def cta2_link(p, lang, end=""):
+    """Optional secondary link on a product (e.g. GitHub beside a download CTA)."""
+    if not (p.get("cta2_href") and "cta2" in p[lang]):
+        return ""
+    return (f'          <a class="btn btn-ghost" href="{p["cta2_href"]}">'
+            f'{icon(p.get("cta2_icon", "arrow-right"))}<span>{p[lang]["cta2"]}</span></a>{end}')
+
+
 def product_article(p, lang):
     c = p[lang]
     hosted = p["status"] == "live"
@@ -1043,6 +1057,7 @@ def product_article(p, lang):
         if "cta" in c and "cta_href" in p:
             tail += (f'          <a class="btn btn-ghost" href="{p["cta_href"]}">'
                      f'{icon(p.get("cta_icon", "mail"))}<span>{c["cta"]}</span></a>\n')
+        tail += cta2_link(p, lang, "\n")
     post = post_for_product(p["slug"])
     if post:
         tail += (f'          <a class="btn btn-ghost product-post" href="{ROUTES[post["key"]][lang]}">'
@@ -1744,6 +1759,7 @@ def product_box(post, lang):
         <div class="post-product-actions">
           <a class="btn btn-ghost" href="{ROUTES['products'][lang]}#{p['slug']}"><span>{t['see_product']}</span></a>
           {gh}
+{cta2_link(p, lang)}
         </div>
       </aside>
 """
