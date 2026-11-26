@@ -1,6 +1,6 @@
 # 009 — fo-foca: point at the project site and its test builds
 
-> Status: **doing**
+> Status: **done**
 > Branch: `moacyrricardo/spec-009-fofoca-project-site` · No Linear ticket.
 
 ## Context
@@ -51,3 +51,15 @@ card for the newest GitHub release (AppImage, `.deb`, `fofoca-setup.sh`; current
 - The release version is not shown on iskeru.com on purpose: the project site looks up the newest
   build itself, so iskeru.com never goes stale on version numbers.
 - Not deployed by this spec.
+
+## Implementation Notes
+
+- Shipped as planned on `moacyrricardo/spec-009-fofoca-project-site`, in three commits after the
+  spec: the generic `cta2` secondary link (`cta2_link()` in `build.py`, used by both
+  `product_article()` and `product_box()`), then the fo-foca content, then this close-out.
+- The main CTA label is stored pre-escaped (`Download &amp; install`), matching the other product
+  strings in `PRODUCTS` (e.g. `Automação &amp; organização financeira`); card text is not escaped at render time.
+- The "speaker separation on the CPU" feature now reads "after the call": the project site lists
+  it as a post-call step and doesn't say where it runs. The post's own CPU detail is unchanged.
+- The post notes are dated 25/11 / Nov 25 (the day the project site and `v0.1.0-pr32` builds were checked).
+- Spec 008's text (which says the card links to GitHub) is left as the historical record.
