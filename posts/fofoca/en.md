@@ -82,12 +82,12 @@ I reviewed, decided and tested by hand. From the first commit (Nov 19, 3:48 pm) 
 
 - **Automatic setup** — detect GPU/RAM, pick what fits, measure on first run. Yes, the
   same idea as Yogurt — but showing why and letting you change everything.
-- **Packaging** — AppImage.
+- **Packaging** — AppImage. *(Update, Nov 25: shipped — test builds as AppImage and .deb.)*
 - **MCP server** (still open) — let other AI tools read your meetings.
 
 ## Try it
 
-It's still pre-alpha: Linux, runs from source. Hardware reports ("this fits on my GPU") and
+It's still pre-alpha: Linux x86-64, now with test builds (AppImage and .deb). Hardware reports ("this fits on my GPU") and
 pt-BR test recordings are very welcome.
 
-If you want to try it and give feedback: github.com/moacyrricardo/fofoca - enjoy :)
+To download and install: [moacyrricardo.github.io/fofoca](https://moacyrricardo.github.io/fofoca/). If you want to try it and give feedback: github.com/moacyrricardo/fofoca - enjoy :)

@@ -170,6 +170,34 @@ class PostsTest(unittest.TestCase):
         self.assertIn('href="/pt/posts/construindo-fofoca/"', prod)
         self.assertIn('href="/pt/produtos/#fofoca"', self.html["pt_post"])
 
+    def test_fofoca_points_at_project_site(self):
+        """Spec 009: main CTA → project site, GitHub kept as secondary, no stale note."""
+        site, gh = "https://moacyrricardo.github.io/fofoca/", "https://github.com/moacyrricardo/fofoca"
+        for page, cta, cta2 in (("products/index.html", "Download &amp; install", "View on GitHub"),
+                                ("pt/produtos/index.html", "Baixar e instalar", "Ver no GitHub")):
+            prod = self.read(page)
+            card = prod[prod.index('<article id="fofoca"'):]
+            card = card[:card.index("</article>")]
+            self.assertIn(f'href="{site}"', card)
+            self.assertIn(f'href="{gh}"', card)
+            self.assertLess(card.index(f'href="{site}"'), card.index(f'href="{gh}"'))
+            self.assertIn(cta, card)
+            self.assertIn(cta2, card)
+            self.assertIn("AppImage, .deb", card)
+            self.assertNotIn("from source", card)
+            self.assertNotIn("a partir do código", card)
+        for page in ("pt_post", "en_post"):
+            box = self.html[page][self.html[page].index('<aside class="post-product">'):]
+            box = box[:box.index("</aside>")]
+            self.assertIn(f'href="{site}"', box)
+            self.assertIn(f'href="{gh}"', box)
+        self.assertIn(f'<a href="{site}">moacyrricardo.github.io/fofoca</a>', self.html["pt_post"])
+        self.assertIn(f'<a href="{site}">moacyrricardo.github.io/fofoca</a>', self.html["en_post"])
+
+    def test_products_without_cta2_unchanged(self):
+        p = next(x for x in build.PRODUCTS if x["slug"] == "moacyr-skills")
+        self.assertEqual(build.cta2_link(p, "en"), "")
+
     def test_index_lists_post_with_summary(self):
         self.assertIn('href="/pt/posts/construindo-fofoca/"', self.html["pt_index"])
         self.assertIn("Daí surgiu o fo-foca.", self.html["pt_index"])
